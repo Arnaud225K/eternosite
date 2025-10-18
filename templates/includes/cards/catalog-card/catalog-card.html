@@ -1,0 +1,35 @@
+{% load static %}
+
+
+<div class="catalog__item">
+    <div class="catalog__item-image"> 
+        {% if category.image %}
+            <img src="{{ category.image.url }}" alt="{{ category.name }}">
+        {% else %}
+            <img src="{% static 'img/images/default_image.webp' %}" alt="Default product image">
+        {% endif %}
+    </div>
+    <div class="catalog__item-cats">
+        <a class="catalog__item-title" href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+        {% with children=category.prefetched_children %}
+            {% if children %}
+                <ul>
+                    {% for child in children|slice:":2" %}
+                        <li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% if children|length > 2 %}
+                    <a class="catalog__item-showmore" href="{{ category.get_absolute_url }}">
+                        <span>Смотреть еще </span>
+                        <svg width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M9.39751 4.10249L16.8975 11.6025C17.0028 11.708 17.062 11.8509 17.062 12C17.062 12.1491 17.0028 12.292 16.8975 12.3975L9.39751 19.8975C9.29088 19.9969 9.14984 20.0509 9.00412 20.0484C8.85839 20.0458 8.71935 19.9868 8.61629 19.8837C8.51323 19.7806 8.4542 19.6416 8.45163 19.4959C8.44905 19.3502 8.50315 19.2091 8.60251 19.1025L15.7041 12L8.60251 4.89749C8.50315 4.79086 8.44905 4.64983 8.45163 4.5041C8.4542 4.35837 8.51323 4.21934 8.61629 4.11628C8.71935 4.01322 8.85839 3.95418 9.00412 3.95161C9.14984 3.94904 9.29088 4.00313 9.39751 4.10249Z"
+                                fill="#8B8B91"></path>
+                        </svg>
+                    </a>    
+                {% endif %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>

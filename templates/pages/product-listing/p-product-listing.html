@@ -1,0 +1,39 @@
+{% load static %}
+{% load catalog_tags %}
+{% load humanize %}
+
+
+<section class="subcategory" id="ajax-category-container" data-category-slug="{{ current_menu.slug }}" data-api-url="{{ base_api_url }}">
+	<div class="container">
+		{% include 'includes/elements/breadcrumb.html' %}
+
+		{% csrf_token %}
+
+		<h1 id="page-h1-title" 
+            {% if current_filial %}data-filial-name="{{ current_filial.name_info }}"{% endif %}>
+            <span id="h1-base-title">{{ h1_title }}</span>
+            {% if current_filial %}
+                <span id="h1-filial-part">в {{ current_filial.name_info }}</span>
+            {% endif %}
+        </h1>
+
+		<div class="subcategory__wrapper">
+			<!-- FILTERS-->
+			<section class="filters" id="filters-container">
+				{% include 'includes/partials/_filters_partial.html' %}
+			</section>
+			<div id="active-filters-container">
+            	{% include 'includes/partials/_active_filters.html' %}
+        	</div>
+		</div>
+		<!-- PRODUCT LIST-->
+			<section class="subcategory__products">
+                <div id="product-list-container">
+				    {% include 'includes/partials/_products_partial.html' %}
+                </div>
+                <div id="pagination-container">
+				    {% include 'includes/partials/_pagination_partial.html' %}
+                </div>
+			</section>
+	</div>
+</section>

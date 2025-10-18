@@ -1,0 +1,102 @@
+{% load static %}
+
+
+<div class="checkout-form">
+    <div class="cart__form-title">Оформление заказа</div>
+    <p>Оставьте контактные данные и наши менеджеры свяжутся с Вами в ближайшее время для подтверждения заказа</p>
+
+    <form method="post" action="{% url 'checkout:checkout_page' %}" enctype="multipart/form-data" id="checkout-form">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="form-error-global">
+                {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <input type="text" 
+                name="{{ form.name.name }}"
+                id="{{ form.name.id_for_label }}"  
+                placeholder="Ваше имя*"
+                value="{{ form.name.value|default_if_none:'' }}" 
+                required>
+            {% if form.name.errors %}<div class="form-error">{{ form.name.errors.as_text }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+            <input type="tel" 
+                name="{{ form.phone.name }}" 
+                id="{{ form.phone.id_for_label }}" 
+                placeholder="+7 999 999-99-99*" 
+                value="{{ form.phone.value|default_if_none:'' }}"
+                required data-phone>
+            {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors.as_text }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+            <input type="email" 
+                name="{{ form.email.name }}" 
+                id="{{ form.email.id_for_label }}" 
+                placeholder="mail@mail.mail*" 
+                value="{{ form.email.value|default_if_none:'' }}">
+        </div>
+        
+        <div class="form-group">
+            <textarea
+                name="{{ form.comment.name }}" 
+                id="{{ form.comment.id_for_label }}" 
+                placeholder="Комментарий" 
+                value="{{ form.comment.value|default_if_none:'' }}" rows="2"></textarea> 
+            {% if form.comment.errors %}
+                <div class="form-error">{{ form.comment.errors.as_text }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.file.id_for_label }}" class="attachment">
+                <img src="{% static 'img/icons/file-clip.svg' %}" alt="Прикрепить файл">
+                <span id="file-name-display">Прикрепить файл</span>
+            </label>
+            <div style="display: none;">{{ form.file }}</div>
+            {% if form.file.errors %}
+                <div class="form-error">{{ form.file.errors.as_text }}</div>
+            {% endif %}
+        </div>
+        
+        <p class="form__note">*Обязательное поле для заполнения</p>
+        
+        <button class="form__submit" type="submit" disabled>Отправить</button>
+        
+        <div class="form__agree">
+            <div class="form-group">
+                <label class="form__checkbox">
+                    <input type="checkbox" name="agreement" id="agreement_visual_checkbox">
+                    <div class="custom-icon"></div>
+                    <div class="form__checkmark">
+                        <span> Я даю своё согласие на обработку моих персональных данных в соответствии с законом №152-ФЗ "О персональных данных" и&nbsp;</span>
+                        <a class="policy" href="/docs/privacy.pdf" target="_blank" rel="noopener">Политикой обработки персональных данных</a>
+                    </div>
+                </label>
+                {% if form.agreement.errors %}
+                    <div class="form-error">{{ form.agreement.errors.as_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form__checkbox">
+                    {{ form.marketing_consent }}
+                    {% comment %} <input class="js-consent" type="checkbox" name="ads"> {% endcomment %}
+                    <div class="custom-icon"></div>
+                    <div class="form__checkmark">
+                        <span> Я соглашаюсь получать информационно-рекламные материалы</span>
+                    </div>
+                </label>
+                {% if form.marketing_consent.errors %}
+                    <div class="form-error">{{ form.marketing_consent.errors.as_text }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+    </form>
+</div>

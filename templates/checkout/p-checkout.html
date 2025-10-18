@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load static %}
+{% load catalog_tags %}
+{% load humanize %}
+
+
+{% block title_page %}
+    {% if current_menu.title_main %}
+	    {{ current_menu.title_main|my_safe:current_filial }}
+    {% else %}
+        Корзина
+    {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% if current_menu.keywords %}
+	    {{ current_menu.keywords|my_safe:current_filial }}
+    {% else %}
+        Корзина
+    {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+    {% if current_menu.keywords_description %}
+	    {{ current_menu.keywords_description|my_safe:current_filial }}
+    {% else %}
+        Корзина  В {{ current_filial.name_info }}
+    {% endif %}
+{% endblock %}
+
+{% block title_page_og %}
+    {% if current_menu.title_main %}
+	    {{ current_menu.title_main|my_safe:current_filial }}
+    {% else %}
+        Корзина
+    {% endif %}
+{% endblock %}
+
+{% block meta_description_og %}
+    {% if current_menu.keywords_description %}
+	    {{ current_menu.keywords_description|my_safe:current_filial }}
+    {% else %}
+        Корзина  В {{ current_filial.name_info }}
+    {% endif %}
+{% endblock %}
+
+
+
+{% block page_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/cart.css'%}">
+{% endblock %}
+
+
+{% block content %}
+{% comment %} <section class="cart">
+	<div class="container">
+		{% include 'includes/elements/breadcrumb.html' %}
+
+		<div class="cart__empty">
+			<h1>Ваша корзина пока пуста</h1>
+			<p>В Вашей корзине пока нет товаров.</p>
+			<p>Вы можете перейти на главную страницу или воспользоваться каталогом товаров</p>
+			<div class="cart__links">
+                <a class="cart__links-cat" href="#">В каталог</a>
+                <a class="cart__links-main" href="#">На Главную</a>
+            </div>
+		</div>
+
+		<h1>Корзина</h1>
+		<div class="cart__full">
+			<div class="cart__products">
+				<div class="cart__products-title">
+					<div class="title">Наименование</div>
+					<div class="sum">Количество</div>
+					<div class="price">Цена</div>
+				</div>
+				<div class="cart__item">
+					<img class="cart__item-img" src="{% static 'img/images/product_img.webp' %}" alt="Перфорированный лист">
+                    <a class="cart__item-name" href="#">Перфорированный лист AAA</a>
+					<div class="cart__item-controls subcategory__product-counter">
+                        <button class="minus">−</button>
+                        <input class="amount" type="text" name="" value="1">
+                        <button class="plus">+</button>
+                    </div>
+					<div class="cart__item-price">По запросу</div>
+					<button class="cart__item-del">
+                        <img src="{% static 'img/icons/del.svg' %}" alt="">
+                    </button>
+				</div>
+				<div class="cart__item">
+					<img class="cart__item-img" src="{% static 'img/images/product_img.webp' %}" alt="Перфорированный лист">
+                    <a class="cart__item-name" href="#">Перфорированный лист AAA</a>
+					<div class="cart__item-controls subcategory__product-counter">
+                        <button class="minus">−</button>
+                        <input class="amount" type="text" name="" value="1">
+                        <button class="plus">+</button>
+                    </div>
+					<div class="cart__item-price">1200 ₽</div>
+					<button class="cart__item-del">
+                        <img src="{% static 'img/icons/del.svg' %}" alt="">
+                    </button>
+				</div>
+			</div>
+			<aside class="cart__form">
+				<div class="cart__form-title">Оформление заказа</div>
+				<p>Оставьте контактные данные и наши менеджеры свяжутся с Вами в ближайшее время для подтверждения заказа</p>
+				<form action="">
+					<input type="text" placeholder="Ваше имя*" required>
+                    <input type="tel" placeholder="+7-000-000-00-00*" required id="cart__phone">
+                    <input type="email" placeholder="mail@mail.mail*" required>
+					<textarea name="comment" placeholder="Комментарий" rows="4"></textarea>
+					<p class="form__note">*Обязательное поле для заполнения</p>
+					<button class="form__submit" type="submit" disabled>Отправить</button>
+					<div class="form__agree">
+						<label class="form__checkbox">
+							<input class="js-consent" type="checkbox" name="pdn" required>
+							<div class="custom-icon"></div>
+							<div class="form__checkmark">
+                                <span> Я даю своё согласие на обработку моих персональных данных в соответствии с законом №152-ФЗ "О персональных данных" и&nbsp;</span>
+                                <a class="policy" href="/docs/privacy.pdf" target="_blank" rel="noopener">Политикой обработки персональных данных</a>
+							</div>
+						</label>
+						<label class="form__checkbox">
+							<input class="js-consent" type="checkbox" name="ads">
+							<div class="custom-icon"></div>
+							<div class="form__checkmark">
+                                <span> Я соглашаюсь получать информационно-рекламные материалы</span>
+							</div>
+						</label>
+					</div>
+				</form>
+			</aside>
+		</div>
+	</div>
+</section> {% endcomment %}
+
+
+<section class="cart" id="cart-page-container">
+	<div class="container">
+		{% include 'includes/elements/breadcrumb.html' %}
+
+		<div class="cart__empty" {% if cart %}style="display: none;"{% endif %}>
+			<h1>Ваша корзина пока пуста</h1>
+			<p>В Вашей корзине пока нет товаров.</p>
+			<p>Вы можете перейти на главную страницу или воспользоваться каталогом товаров</p>
+			<div class="cart__links">
+                <a class="cart__links-cat" href="/catalog/">В каталог</a>
+            </div>
+		</div>
+        
+		<div class="cart_list__section" {% if not cart %}style="display: none;"{% endif %}>
+			<h1>Корзина</h1>
+			<div class="cart__full">
+				<div class="cart__products" id="cart-items-wrapper">
+					{% if cart %}
+						{% include 'includes/partials/_cart_items_list.html' %}
+					{% endif %}
+				</div>
+
+				<aside class="cart__form">
+					{% include 'includes/checkout-form/checkout-form.html' %}
+				</aside>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}
+
+

@@ -1,0 +1,48 @@
+{% load static catalog_tags %}
+
+
+<div class="cart__products-title">
+    <div class="title">Наименование</div>
+    <div class="sum">Количество</div>
+    <div class="price">Цена</div>
+</div>
+
+{% for item in cart %}
+<div class="cart__item" data-product-id="{{ item.product.id }}">
+    <img class="cart__item-img" 
+        src="{% if item.product.images.first %}{{ item.product.images.first.image.url }}{% else %}{% static 'img/images/default_image.webp' %}{% endif %}" 
+        alt="{{ item.product.title }}">
+
+    <a class="cart__item-name" href="{{ item.product.get_absolute_url }}">{{ item.product.title }}</a>
+
+    <div class="cart__item-controls subcategory__product-counter">
+        <button class="minus">-</button>
+        <input class="amount" type="text" value="{{ item.quantity }}">
+        <button class="plus">+</button>
+    </div>
+
+    <div class="cart__item-price">
+        {% if item.price == "0.00" %}
+            По запросу
+        {% else %}
+            {% if item.price_type == "from" %}от {% endif %}
+            {{ item.total_price|format_price }} ₽
+        {% endif %}
+    </div>
+
+    <button class="cart__item-del">
+        <img src="{% static 'img/icons/del.svg' %}" alt="Удалить">
+    </button>
+</div>
+{% endfor %}
+
+<div class="cart__total">
+    <strong>Итого:</strong>
+    <span id="cart-total-price">
+        {% if cart.get_total_price is None %}
+            Договорная
+        {% else %}
+            {{ cart.get_total_price|format_price }} ₽
+        {% endif %}
+    </span>
+</div>

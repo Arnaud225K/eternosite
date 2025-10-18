@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static catalog_tags %}
+
+
+{% block page_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/thank.css'%}">
+{% endblock %}
+
+{% block content %}
+<section class="thank">
+    <div class="container">
+        <div class="section__title thank_title">
+            <h1>Благодарим вас за заказ!</h1>
+        </div>
+        <p>Ваша заявка отправлена, наш менеджер свяжется с Вами в ближайшее время для уточнения заказа.</p>
+        
+        {% if order %}
+            <p>Номер заказа: <strong>№{{ order.order_key }}</strong></p>
+
+            <div class="order-details-summary">
+                <h2>Детали заказа</h2>
+                {% with order_items=order.items.all %}
+                    {% if order_items %}
+                        <h3>Товары в заявке</h3>
+                        <ul class="order-items-list">
+                            {% for item in order_items %}
+                                <li>
+                                    <span class="item-info">
+                                        {{ item.quantity }} x {{ item.product_title }}
+                                        
+                                        (по цене 
+                                        {% if item.price == 0 %}
+                                            Договорная
+                                        {% else %}
+                                            {% if item.price_type == "from" %}от {% endif %}
+                                            {{ item.price|format_price }} ₽
+                                        {% endif %})
+                                    </span>
+                                    
+                                    <span class="item-total">
+                                        <strong>
+                                        {% if item.price == 0 %}
+                                            Договорная
+                                        {% else %}
+                                            {% if item.price_type == "from" %}от {% endif %}
+                                            {{ item.get_cost|format_price }} ₽
+                                        {% endif %}
+                                        </strong>
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        
+                        <div class="order-totals-summary">
+                            <p class="grand-total">
+                                <strong>Общая стоимость</strong>
+                                {% if order.has_non_fixed_price %}
+                                    <strong>Договорная</strong>
+                                {% else %}
+                                    <strong>{{ order.total_cost|format_price }} ₽</strong>
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <div class="thank__btns"> 
+                <a class="catalog__return" href="/catalog/">В каталог</a>
+                <a class="main__return" href="/">На главную</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

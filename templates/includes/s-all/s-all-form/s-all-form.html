@@ -1,0 +1,31 @@
+{% load static %}
+
+
+<div class="pageform__content-caption">
+    <p>Остались вопросы?</p>
+    <p>Заполните форму, чтобы мы могли помочь</p>
+    <form>
+        <div class="pageform__content-inputs"> <input type="text" placeholder="Имя"><input type="email"
+            placeholder="E-mail*" required><input type="tel" placeholder="Номер телефона" id="form_phone"></div>
+        <p class="form__note">*Обязательное поле для заполнения</p>
+        <div class="form__agree">
+            <label class="form__checkbox">
+                <input class="js-consent" type="checkbox"
+                    name="pdn" required>
+                <div class="custom-icon"></div>
+                <div class="form__checkmark"><span> Я даю своё согласие на обработку моих персональных данных в
+                    соответствии с законом №152-ФЗ "О персональных данных" и&nbsp;</span><a class="policy"
+                        href="/docs/privacy.pdf" target="_blank" rel="noopener">Политикой обработки персональных
+                    данных</a>
+                </div>
+            </label>
+            <label class="form__checkbox">
+                <input class="js-consent" type="checkbox" name="ads">
+                <div class="custom-icon"></div>
+                <div class="form__checkmark"><span> Я соглашаюсь получать информационно-рекламные материалы</span>
+                </div>
+            </label>
+        </div>
+        <button class="form__submit" type="submit" disabled>Отправить</button>
+    </form>
+</div>

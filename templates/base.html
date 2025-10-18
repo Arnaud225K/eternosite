@@ -1,0 +1,57 @@
+{% load static %}
+{% load nospaces %}
+
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>{% nospaces %}{% block title_page %}{% endblock %}{% endnospaces %}</title>
+        <meta name="keywords" content="{% nospaces %}{% block meta_keywords %}{% endblock %}{% endnospaces %}">
+        <meta name="description" content="{% nospaces %}{% block meta_description %}{% endblock %}{% endnospaces %}">
+        <meta name="format-detection" content="telephone=no">
+        <meta property="og:title" content="{% nospaces %}{% block title_page_og %}{% endblock %}{% endnospaces %}">
+		<meta property="og:url" content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ request.path_info }}">
+        <meta property="og:description" content="{% nospaces %}{% block meta_description_og %}{% endblock %}{% endnospaces %}">
+		<meta property="og:image" content="{% static "img/favicon/favicon-96x96.png" %}">
+		<meta property="og:type" content="website">
+		<meta name="robots" content="noindex, nofollow">
+        {% block extra_head %}{% endblock %}	
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/styles.css'%}">
+        {% block page_styles %}{% endblock %}
+        <link rel="icon" type="image/png" href="{% static "img/favicon/favicon-96x96.png" %}" sizes="96x96"/>
+        <link rel="icon" type="image/svg+xml" href="{% static "img/favicon/favicon.svg" %}"/>
+        <link rel="shortcut icon" href="{% static "img/favicon/favicon.ico" %}"/>
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static "img/favicon/apple-touch-icon.png" %}"/>
+        <meta name="apple-mobile-web-app-title" content="novator"/>
+        <link rel="manifest" href="{% static "img/favicon/site.webmanifest" %}"/>
+        {% if current_filial.text_head_filial %}
+            {{ current_filial.text_head_filial|safe }}
+        {% elif project_settings.text_head %}
+            {{ project_settings.text_head|safe }}
+        {% else %}
+        {% endif %}
+    </head>
+	<body>
+        <div class="overlay"></div>
+        {% include 'includes/header/header.html' %}
+        <main class="layoutWrapper">
+            <div class="mainContent">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </main>        
+        {% include 'includes/footer/footer.html' %}
+        {% block modal %}{% endblock modal %}
+        <script src="{% static 'js/main.js' %}" defer="defer"></script>
+        <script src="{% static 'js/custom.js' %}" defer></script>
+        {% block script %}{% endblock script %}
+        {% if current_filial.text_body_filial %}
+            {{ current_filial.text_body_filial|safe }}
+        {% elif project_settings.text_body %}
+            {{ project_settings.text_body|safe }}
+        {% else %}
+        {% endif %}
+    </body>
+</html>

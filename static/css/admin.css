@@ -1,0 +1,74 @@
+/* .brand-link {
+    background-color: #021549;
+} */
+
+/* .brand-link {
+    background-color: #021549;
+} */
+
+.brand-link .elevation-3 {
+    box-shadow: none !important;
+}
+
+/* .main-sidebar { 
+    background-color: #021549;
+} */
+
+/* nav#jazzy-navbar {
+    background-color: #021549;
+}  */
+
+/* .btn-success {
+    color: #fff;
+    background-color: #850003 !important;
+    border-color: #850003 !important;
+}
+
+.btn-success {
+    background-image: linear-gradient(#850003, #930305 60%, #850003);
+    background-repeat: no-repeat;
+} */
+
+/* .btn-success {
+    color: #fff;
+    background-color: #021549 !important;
+    border-color: #021549 !important;
+}
+
+.btn-success {
+    background-image: linear-gradient(#021549, #021549 60%, #021549);
+    background-repeat: no-repeat;
+} */
+
+/* 
+.btn-info {
+    background-image: linear-gradient(#021549, #021549 60%, #021549);
+    background-repeat: no-repeat;
+}
+
+.btn-info {
+    color: #fff;
+    background-color: #021549;
+    border-color: #021549;
+}  */
+
+
+
+/* .sidebar-dark-success .nav-sidebar>.nav-item>.nav-link.active, .sidebar-light-success .nav-sidebar>.nav-item>.nav-link.active {
+    background-color: #021549;
+    color: #fff;
+} */
+
+.sidebar-dark-success .nav-sidebar.nav-legacy>.nav-item>.nav-link.active, .sidebar-light-success .nav-sidebar.nav-legacy>.nav-item>.nav-link.active {
+    border-color: #73a839;
+}
+
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    color: #343a40;
+}
+
+/* .btn-outline-success {
+    color: #021549;
+    border-color: #850003;
+} */

@@ -1,0 +1,31 @@
+{% if products_list.has_other_pages %}
+<div class="subcategory__showmore">
+    {% if products_list.has_next %}
+        <button class="subcategory__showmore-button" 
+                data-next-page="{{ products_list.next_page_number }}" 
+                data-total-pages="{{ products_list.paginator.num_pages }}">
+            Показать еще 
+        </button>
+    {% endif %}    
+    
+    <div class="pagination">
+        {% if products_list.has_previous %}
+            <a class="arrow arrow-left" href="?page={{ products_list.previous_page_number }}"> </a>
+        {% endif %}
+            {% for page_num in products_list.paginator.page_range %}
+                {% if products_list.number == page_num %}
+                    <span class="pagination__num current">{{ page_num }}</span>
+                {% elif page_num > products_list.number|add:-3 and page_num < products_list.number|add:3 %}
+                    <a class="pagination__num js-pagination-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                {% elif forloop.first or forloop.last %}
+                    <div class="pagination__skip">...</div>
+                {% endif %}
+            {% endfor %}
+        {% if products_list.has_next %}
+            <a class="arrow arrow-right js-pagination-link" href="?page={{ products_list.next_page_number }}"> </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+
