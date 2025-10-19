@@ -10,8 +10,8 @@
 		{% elif is_uslugi_page %}
 			<li>Услуги</li>
 		{% elif service %}
-			<li><a href="{% url 'uslugi:uslugi_list' %}">Услуги</a></li>
-			<li>{{ service.name }}</li>
+			<li><a href="{% url 'products:service_list' %}">Услуги</a></li>
+			<li>{{ service.title }}</li>
 		{% elif is_articles_page %}
 			<li>Статьи</li>
 		{% elif article %}

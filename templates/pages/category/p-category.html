@@ -3,22 +3,6 @@
 {% load humanize %}
 
 
-{% comment %} <main class="category ajax-category" data-category-slug="{{ current_menu.slug }}" data-api-url="{{ base_api_url }}">
-    <div class="container">
-        {% include 'includes/elements/breadcrumb.html' %}
-        <h1 id="page-h1-title">{{ h1_title }} в {{ current_filial.name_info }}</h1>
-        {% if subcategories %}
-            <section class="subcategories">
-                {% for subcat in subcategories %}
-                    {% include 'includes/cards/category-card/category-card.html' %}
-                {% endfor %}
-            </section>
-        {% endif %}
-        
-        {% include "includes/s-all/s-all-seo-text/s-all-seo-text.html" %}
-    </div>
-</main> {% endcomment %}
-
 
 <section class="category">
 	<div class="container">

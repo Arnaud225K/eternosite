@@ -32,7 +32,8 @@ class OrderAdmin(admin.ModelAdmin):
         '__str__', 
         'order_type', 
         'name',
-        'phone', 
+        'phone',
+        'ip_address', 
         'filial',
         'created_at'
     )
@@ -64,7 +65,6 @@ class OrderAdmin(admin.ModelAdmin):
         )
 
     def get_inline_instances(self, request, obj=None):
-        # On n'affiche les articles que si la commande vient du panier
         if obj and obj.order_type == Order.TYPE_CART:
             return super().get_inline_instances(request, obj)
         return []

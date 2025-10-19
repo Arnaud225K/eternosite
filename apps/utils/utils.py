@@ -4,7 +4,7 @@ from django.core.files.storage import FileSystemStorage
 from eternoprom import settings
 from urllib.parse import urljoin
 from datetime import datetime
-
+import random
 from django.utils.html import format_html
 from django.templatetags.static import static
 
@@ -453,3 +453,39 @@ def minfirst(text):
     if not text:
         return ''
     return text[0].lower() + text[1:]
+
+
+
+
+
+def get_similar_products(product, filial, max_results=6):
+    """
+    Récupère une liste de produits similaires visibles dans la filiale actuelle.
+    1. Cherche dans la même catégorie.
+    2. Si pas assez, cherche dans la catégorie parente.
+    3. Applique les données de la filiale (prix, dispo).
+    4. Mélange et retourne le résultat.
+    """
+    if not product or not product.category:
+        return Product.objects.none()
+
+    current_category = product.category
+    
+    base_qs = Product.objects.get_visible_for_filial(filial)
+    
+    base_qs = base_qs.exclude(id=product.id)
+
+    same_category_products = list(base_qs.filter(category=current_category)[:max_results + 2])
+    
+    found_ids = {p.id for p in same_category_products}
+    
+    if len(same_category_products) < max_results and current_category.parent:
+        remaining_needed = max_results - len(same_category_products)
+        parent_products = list(base_qs.filter(
+            category=current_category.parent
+        ).exclude(id__in=found_ids)[:remaining_needed])
+        same_category_products.extend(parent_products)
+
+    random.shuffle(same_category_products)
+    
+    return same_category_products[:max_results]

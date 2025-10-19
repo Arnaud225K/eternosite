@@ -1,4 +1,5 @@
 {% load static %}
+{% load catalog_tags %}
 
 <section class="seotext">
 	<div class="container">
@@ -68,3 +69,34 @@
 		<p class="seotext__showmore">Читать полностью...</p>
 	</div>
 </section>
+
+
+
+{% comment %} 
+{% with description=current_menu.description %}
+    {% if description|clean_html %}
+        <section class="seotext">
+            <div class="seo__textblock">
+                {{ description|safe|my_safe:template_vars }}
+            </div>
+        </section>
+    {% else %}        
+        {% if is_page_product %}
+            {% if static_texts.auto_product_seo_text|clean_html %}
+                <section class="seo">
+                    <div class="seo__textblock">
+                        {{ static_texts.auto_product_seo_text|safe|my_safe:template_vars }}
+                    </div>
+                </section>
+            {% endif %}
+        {% else %}
+            {% if static_texts.auto_category_seo_text|clean_html %}
+                <section class="seo">
+                    <div class="seo__textblock">
+                        {{ static_texts.auto_category_seo_text|safe|my_safe:template_vars }}
+                    </div>
+                </section>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endwith %} {% endcomment %}

@@ -42,6 +42,7 @@ urlpatterns += [
     # path('uslugi/', include('apps.uslugi.urls', namespace='uslugi')),
     # path('articles/', include('apps.articles.urls', namespace='articles')),
     path('checkout/', include('apps.checkout.urls')),
+    path('', include('apps.products.urls', namespace='products')),
     path('',include('apps.menu.urls')),
     # --- CUSTOM LIBRARY URL ---
     path("ckeditor5/image_upload/", custom_ckeditor_upload, name="ck_editor_5_upload_file"),

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import (Product, ProductImage, ProductFilialData, FilterCategory, FilterValue)
+# from .models import (Product, ProductImage, ProductFilialData, FilterCategory, FilterValue)
+from .models import (Product, Service, ProductImage, ProductFilialData, FilterCategory, FilterValue)
 from apps.utils.utils import format_price_admin, get_admin_product_image_thumbnail_html
 from apps.menu.models import MenuCatalog, TypeMenu
 
@@ -114,4 +115,25 @@ class ProductAdmin(admin.ModelAdmin):
         Optimise le chargement des données pour la liste des produits.
         """
         qs = super().get_queryset(request)
+        # return qs.select_related('category').prefetch_related('images__gallery_image')
+        return qs.select_related('category').prefetch_related('images__gallery_image').filter(service__isnull=True)
+    
+
+
+
+@admin.register(Service)
+class ServiceAdmin(ProductAdmin):
+    """
+    Classe Admin pour les Services. Elle hérite de toutes les configurations de ProductAdmin,
+    ce qui nous évite de tout réécrire.
+    """
+    
+    def get_queryset(self, request):
+        """
+        S'assure que cette vue ne montre QUE les services.
+        On utilise le queryset de base de ProductAdmin pour garder les optimisations.
+        """
+        # On ne peut pas appeler super().get_queryset() car il exclut les services.
+        # On doit réimplémenter la base.
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
         return qs.select_related('category').prefetch_related('images__gallery_image')

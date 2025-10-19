@@ -1,5 +1,3 @@
-
-
 (() => {
     "use strict";
 
@@ -36,6 +34,74 @@
         }
     }
 
+
+    function displayValidationErrorModal(input, message, errorClass) {
+        const form = input.closest('form');
+        if (!form) return;
+        const errorContainer = form.querySelector(errorClass);
+        if (errorContainer) {
+            errorContainer.textContent = message;
+            errorContainer.style.display = 'block';
+        }
+        input.classList.add('invalid');
+    }
+    function clearValidationErrorModal(input, errorClass) {
+        const form = input.closest('form');
+        if (!form) return;
+        const errorContainer = form.querySelector(errorClass);
+        if (errorContainer) {
+            errorContainer.style.display = 'none';
+        }
+        input.classList.remove('invalid');
+    }
+
+
+    function validatePhoneNumber(form) {
+        const phoneInput = form.querySelector('input[name="phone"]');
+        if (!phoneInput) return true;
+        const cleanedPhone = phoneInput.value.replace(/\D/g, '');
+        if (phoneInput.required && cleanedPhone.length < 11) {
+            displayValidationErrorModal(phoneInput, 'Неверный формат номера телефона.', '.phone-error');
+            return false;
+        }
+        clearValidationErrorModal(phoneInput, '.phone-error');
+        return true;
+    }
+    function validateEmail(form) {
+        const emailInput = form.querySelector('input[name="email"]');
+        if (!emailInput) return true;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailInput.value && !emailRegex.test(emailInput.value)) {
+            displayValidationErrorModal(emailInput, 'Неверный адрес электронной почты.', '.email-error');
+            return false;
+        }
+        clearValidationErrorModal(emailInput, '.email-error');
+        return true;
+    }
+
+    function validateAgreement(form) {
+        const agreementCheckbox = form.querySelector('input[name="agreement"]');
+        if (!agreementCheckbox) {
+            return true;
+        }
+
+        const errorContainer = form.querySelector('.agreement-error');
+        
+        if (!agreementCheckbox.checked) {
+            if (errorContainer) {
+                errorContainer.textContent = 'Необходимо согласиться на обработку данных.';
+                errorContainer.style.display = 'block';
+            }
+            return false;
+        }
+        
+        if (errorContainer) {
+            errorContainer.style.display = 'none';
+        }
+        return true;
+    }
+
+
     window.updateHeaderCartCounter = function(count) {
         const counterElement = document.getElementById('header-cart-count');
         if (!counterElement) return;
@@ -64,6 +130,7 @@
         }
     }
 
+
     function updateCartUI(data) {
         const itemsWrapper = document.querySelector('.cart__products'); 
         const emptyMessage = document.querySelector('.cart__empty');
@@ -91,18 +158,28 @@
             const addButton = event.target.closest('.addtocart');
             if (addButton) {
                 event.preventDefault();
-                const productCard = addButton.closest('.subcategory__product');
-                //Si le produit est déjà au panier, on arrete tout
-                // if (productCard.classList.contains('purchased')) return;
+                
+                // const productContainer = addButton.closest('.subcategory__product, section.product');
+                    
+                const productContainer = addButton.closest('.subcategory__product, section.product, section.service_page');
 
-                if (productCard.classList.contains('purchased')) {
-                    // Si le produit est déjà au panier, rediriger vers la page panier
-                    window.location.href = '/checkout/';
+                if (!productContainer) {
+                    console.error("Could not find product container for the add to cart button.");
+                    return;
+                }
+                
+                if (productContainer.classList.contains('purchased') || addButton.classList.contains('purchased')) {
+                    window.location.href = '/checkout/'; 
                     return; 
                 }
             
-                const productId = productCard.dataset.productId;
-                const quantityInput = productCard.querySelector('.amount');
+                const productId = productContainer.dataset.productId;
+                if (!productId) {
+                    console.error("Product ID not found on container.", productContainer);
+                    return;
+                }
+                
+                const quantityInput = productContainer.querySelector('.amount');
                 const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 1;
             
                 addButton.disabled = true;
@@ -110,8 +187,14 @@
                 const data = await sendCartRequest(`/checkout/cart/add/${productId}/`, { quantity: quantity });
                 
                 if (data && data.success) {
-                    document.querySelectorAll(`.subcategory__product[data-product-id="${productId}"]`).forEach(card => {
-                        card.classList.add('purchased');
+                    document.querySelectorAll(`.subcategory__product[data-product-id="${productId}"], section.product[data-product-id="${productId}"]`).forEach(container => {
+                        container.classList.add('purchased');
+                        const btn = container.querySelector('.addtocart');
+                        if(btn) {
+                            const btnSpan = btn.querySelector('span');
+                            if (btnSpan) btnSpan.textContent = 'В корзине';
+                            btn.classList.add('purchased');
+                        }
                     });
                     window.updateHeaderCartCounter(data.cart_unique_items_count);
                 }
@@ -178,11 +261,8 @@
             }
         });
         
-        // --- 3. Logique du formulaire de commande ---
-
-        // INITIALISATION DES ÉVÉNEMENTS
         
-        // --- Gestion du formulaire de commande ---
+        
         const checkoutForm = document.getElementById('checkout-form');
         if (checkoutForm) {
             const fileInput = checkoutForm.querySelector('input[name="file"]');
@@ -227,9 +307,78 @@
 
                 if (!isFormValid) {
                     event.preventDefault();
-                    console.warn("Client-side form validation failed. Submission stopped.");
+                    // console.warn("Client-side form validation failed");
                 }
             });
         }
     });
+
+    // SECTION 3 : GESTION FORM SOUMISSION
+    async function handleFormSubmit(form) {
+        const submitButton = form.querySelector('.form__submit, .btn[type="submit"]');
+        const errorContainer = form.querySelector('.js-error');
+        const url = form.getAttribute('action');
+        const formData = new FormData(form);
+
+        if (submitButton) submitButton.disabled = true;
+        if (errorContainer) errorContainer.style.display = 'none';
+
+        try {
+            const response = await fetch(url, { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                if (data.thank_you_url) window.location.href = data.thank_you_url;
+            } else {
+                const errorMessage = data.error || "Пожалуйста, исправьте ошибки.";
+                if (errorContainer) {
+                    errorContainer.textContent = errorMessage;
+                    errorContainer.style.display = 'block';
+                }
+            }
+        } catch (error) {
+            console.error("AJAX form submission error:", error);
+            if (errorContainer) {
+                errorContainer.textContent = "Произошла ошибка сети. Попробуйте снова.";
+                errorContainer.style.display = 'block';
+            }
+        } finally {
+            if (submitButton) submitButton.disabled = false;
+        }
+    }
+
+    // Appliquer le masque de téléphone
+    document.querySelectorAll('input[data-phone]').forEach(input => {
+        function mask(event) {
+            let keyCode; event.keyCode && (keyCode = event.keyCode);
+            let pos = this.selectionStart;
+            if (pos < 3) event.preventDefault();
+            let matrix = "+7 (___) ___-__-__", i = 0, def = matrix.replace(/\D/g, ""), val = this.value.replace(/\D/g, ""),
+            new_value = matrix.replace(/[_\d]/g, a => (i < val.length ? val.charAt(i++) || def.charAt(i) : a));
+            i = new_value.indexOf("_");
+            if (i != -1) { i < 5 && (i = 3); new_value = new_value.slice(0, i) }
+            let reg = matrix.substr(0, this.value.length).replace(/_+/g, a => "\\d{1," + a.length + "}").replace(/[+()]/g, "\\$&");
+            reg = new RegExp("^" + reg + "$");
+            if (!reg.test(this.value) || this.value.length < 5 || keyCode > 47 && keyCode < 58) this.value = new_value;
+            if (event.type == "blur" && this.value.length < 5) this.value = "";
+        }
+        input.addEventListener("input", mask, false);
+        input.addEventListener("focus", mask, false);
+        input.addEventListener("blur", mask, false);
+        input.addEventListener("keydown", mask, false);
+    });
+
+    // VAlidation avant soummission
+    document.querySelectorAll('.modal__form').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const isPhoneValid = validatePhoneNumber(this);
+            const isEmailValid = validateEmail(this);
+            const isAgreementValid = validateAgreement(this);
+
+            if (isPhoneValid && isEmailValid && isAgreementValid) {
+                handleFormSubmit(this);
+            }
+        });
+    });
+
 })();

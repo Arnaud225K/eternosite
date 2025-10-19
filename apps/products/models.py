@@ -94,14 +94,22 @@ class Product(models.Model):
     filters = models.ManyToManyField(FilterValue, verbose_name="Значения фильтров", related_name="products", blank=True)
     is_hidden = models.BooleanField("Скрыть", default=False, db_index=True, help_text="Скрыть товар со всего сайта.")
     is_hit = models.BooleanField("Хит продаж", default=False, db_index=True, help_text="Показывать в блоке 'Хиты' на главной.")
-    manufacturer = models.CharField("Производитель", max_length=255, blank=True)
-    country_of_origin = models.CharField("Страна производства", max_length=100, blank=True)
-    warranty_info = models.CharField("Гарантия", max_length=100, blank=True)
-    material = models.CharField("Материал", max_length=100, blank=True)
     created_at = models.DateTimeField("Создано", auto_now_add=True, editable=False)
     updated_at = models.DateTimeField("Обновлено", auto_now=True, editable=False)
     order_number = models.PositiveIntegerField("Порядок", default=100)
     search_vector = SearchVectorField(null=True, editable=False)
+    
+    seo_title = models.CharField("SEO Заголовок (Title)", max_length=255, blank=True)
+    seo_description = models.TextField("SEO Описание (Description)", blank=True)
+    seo_keywords = models.TextField(verbose_name="Ключевые слова (мета)", blank=True, null=True)
+    
+    related_services = models.ManyToManyField(
+        'Service', 
+        verbose_name="Сопутствующие услуги",
+        blank=True,
+        related_name="products_offered_with",
+        help_text="Выберите услуги, которые будут предложены с этим товаром."
+    )
     
 
     objects = ProductManager()
@@ -237,7 +245,14 @@ class Product(models.Model):
         self._structured_features_cache = dict(features)
         return self._structured_features_cache
 
+    # def get_absolute_url(self):
+    #     return reverse('menu:product', kwargs={'product_slug': self.slug})
     def get_absolute_url(self):
+        # On vérifie si l'instance est un Service ou un Product
+        if hasattr(self, 'service'): # 'service' est le nom de la relation inverse créée par l'héritage
+            return reverse('products:service_detail', kwargs={'slug': self.slug})
+        # Par défaut, c'est un produit
+        # Note: Assurez-vous d'avoir une URL nommée 'product_detail' quelque part
         return reverse('menu:product', kwargs={'product_slug': self.slug})
 
 
@@ -297,3 +312,33 @@ class ProductFilialData(models.Model):
         unique_together = ('product', 'filial')
         verbose_name = "Данные продукта по филиалу"
         verbose_name_plural = "Данные продуктов по филиалам"
+
+
+
+
+
+
+
+class Service(Product):
+    """
+    Modèle pour les services. Hérite de Product pour pouvoir être traité
+    comme un produit standard (ajout au panier, prix, etc.).
+    """
+    # Product a déjà: base_name, title, slug, sku, category, description,
+    # base_price, price_type, is_hidden, etc.
+    
+    # On peut ajouter des champs spécifiques aux services si besoin
+    # Par exemple :
+    # duration = models.DurationField("Durée estimée", blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Услуга"
+        verbose_name_plural = "Услуги"
+
+    def save(self, *args, **kwargs):
+        # On peut surcharger des logiques si besoin. Par exemple, forcer une catégorie.
+        # if not self.category_id:
+        #     # Assurez-vous d'avoir une catégorie "Services" dans votre MenuCatalog
+        #     service_category, _ = MenuCatalog.objects.get_or_create(name="Услуги", ...)
+        #     self.category = service_category
+        super().save(*args, **kwargs)

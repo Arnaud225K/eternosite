@@ -89,6 +89,9 @@
                 if (data && data.success) {
                     document.querySelectorAll(`.subcategory__product[data-product-id="${productId}"]`).forEach(card => {
                         card.classList.add('purchased');
+                        // const btnSpan = card.querySelector('.addProduct > span');
+                        // if(btnSpan) 
+                        //     btnSpan.textContent = 'В корзине';
                     });
                     window.updateHeaderCartCounter(data.cart_unique_items_count);
                 }

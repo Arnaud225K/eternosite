@@ -1,26 +1,23 @@
+{% load static %}
+{% load catalog_tags %}
+{% load humanize %}
+
+
 
 
 <div class="product__description" data-tabs="product">
     <div class="product__tabs"> 
-    <button class="tablink active" data-target="description">Трубный прокат</button>
+    <button class="tablink active" data-target="description">{{ product.full_title }}</button>
     <button class="tablink" data-target="delivery">Оплата и доставка</button>
     <button class="tablink" data-target="services">Сопутствующие услуги</button>
     </div>
     <div class="cat_menu__content">
         <div class="tabcontent active" id="description">
-            <p>Мачта с мобильной короной ВМО (МГФ-М-50) и другие товары, купленные в интернет-магазине «Woland
-                Light», отправляются клиентам только после 100% оплаты. Условия доставки обговариваются с менеджером
-                при подтверждении покупки. После согласования деталей рассчитывается индивидуальный маршрут перевозки
-                груза.
-            </p>
-            <p>Развитая логистика позволяет нам безопасно и оперативно транспортировать товары любого объема в
-                Екатеринбург и по всей стране. Мы используем собственный парк автомобилей с разной грузоподъёмностью.
-                Доставляем товары до терминала или склада клиента, а также до точно указанного им адреса. Мы всегда на
-                связи по телефону 8 (800) 500-22-98 или почте zakaz@svetaopora.ru.
-            </p>
-            <p>Важно! У клиента на руках должны быть документы, позволяющие получить груз – это может быть
-                доверенность или оригинальная регистрационная бумага.
-            </p>
+            {% if product.description|clean_html %}
+                {{ product.description|safe }}
+            {% else %}
+                {% include "includes/s-all/product-auto-text/product-auto-text.html" %}
+            {% endif %}
         </div>
         <div class="tabcontent" id="delivery">
             <p>Условия оплаты и доставки</p>

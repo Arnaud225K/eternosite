@@ -1,0 +1,65 @@
+{% load static %}
+{% load catalog_tags %}
+
+
+{% comment %} <main class="services">
+    <div class="container">
+        {% include 'includes/elements/breadcrumb.html' %}
+        <h1>Услуги</h1>
+        <div class="articles__wrapper services__wrapper">
+            
+            {% for service in services %}
+            <div class="articles__item">
+                <div class="articles__item-content">
+                    <div class="articles__item-title services__title">
+                        <p>{{ service.name }}</p>
+                    </div>
+                    <div class="articles__item-descr services__descr">
+                        {# On affiche la description courte #}
+                        <p>{{ service.description }}</p>
+                        
+                        {# Le lien "Подробнее" pointe maintenant vers la page de détail #}
+                        <a href="{{ service.get_absolute_url }}">Подробнее</a>
+                    </div>
+                </div>
+                <div class="articles__item-arrow services__arrow">
+                    <a href="{{ service.get_absolute_url }}" aria-label="Перейти к услуге {{ service.name }}">
+                        <svg class="icon icon-arrow-right" viewBox="0 0 24 24" width="24" height="24">
+                            <path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="#228AED" stroke-width="2"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+                <p>На данный момент услуги не найдены.</p>
+            {% endfor %}
+
+        </div>
+    </div>
+</main> {% endcomment %}
+
+
+
+<section class="services">
+	<div class="container">
+		{% include 'includes/elements/breadcrumb.html' %}
+
+
+		<h1>Услуги в {{ current_filial.name_info }}</h1>
+
+
+		<div class="services__wrapper">
+            {% for service in services %}
+			<a class="services__item" href="{{ service.get_absolute_url }}">
+				<img class="services__item-background"
+					src="{% if service.images.first %}{{ service.images.first.image.url }}{% else %}{% static 'img/images/default_image.webp' %}{% endif %}" alt="{{ service.title }}">
+				<div class="services__item-overlay"> </div>
+				<div class="services__item-title">{{ service.title }}</div>
+			</a>
+            {% empty %}
+                <p>На данный момент услуги не найдены.</p>
+            {% endfor %}
+
+		</div>
+	</div>
+</section>

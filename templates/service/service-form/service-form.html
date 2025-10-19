@@ -1,0 +1,29 @@
+
+{% load static %}
+
+
+
+
+<form action="#">
+    <input type="tel" name="phone" placeholder="+7 999 999 999" required
+        id="service_page__aside-tel">
+    <button class="form__submit" type="submit">Отправить</button>
+    <div class="form__agree">
+        <label class="form__checkbox">
+            <input class="js-consent" type="checkbox"
+                name="pdn" required>
+            <div class="custom-icon"></div>
+            <div class="form__checkmark"><span> Я даю своё согласие на обработку моих персональных данных в
+                соответствии с законом №152-ФЗ "О персональных данных" и&nbsp;</span><a class="policy"
+                    href="/docs/privacy.pdf" target="_blank" rel="noopener">Политикой обработки персональных
+                данных</a>
+            </div>
+        </label>
+        <label class="form__checkbox">
+            <input class="js-consent" type="checkbox" name="ads">
+            <div class="custom-icon"></div>
+            <div class="form__checkmark"><span> Я соглашаюсь получать информационно-рекламные материалы</span>
+            </div>
+        </label>
+    </div>
+</form>

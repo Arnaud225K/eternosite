@@ -1181,6 +1181,9 @@ h1 {
     color: #8b8b91;
     font-size: 12px;
 }
+.form-group {
+    width: 100%;
+}
 .form__submit {
     background: linear-gradient(to right, #850003 0%, #850003 100%);
     color: #fff;
@@ -1622,4 +1625,17 @@ h1 {
 
 input[name="comp_input_hidden"] {
     display: none;
+}
+
+.pageform-error {
+    width: 100%;
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    display: none;
+}
+.pageform-error[style*="display: block"] {
+    display: block !important;
 }

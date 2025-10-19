@@ -31,6 +31,7 @@ from apps.utils.utils import (
     build_filter_url_segment,
     get_active_filters_display_string,
     minfirst,
+    get_similar_products,
 )
 # from apps.products.views import RecentlyViewed
 # from apps.offers.models import OfferCollection
@@ -69,9 +70,6 @@ SIZE_REVIEWS_LIST = 10
 SIZE_ARTICLE_LIST = 4
 PRODUCT_CATEGORY_TYPE_IDS = [6, 7, 8]
 SIZE_POP_CATEG_INDEX = 7
-
-
-
 
 
 
@@ -411,6 +409,7 @@ class ProductView(View):
 
         h1_title = product.full_title
 
+        similar_products = get_similar_products(product, filial=current_filial, max_results=4)
 
         # 4. PRÉPARER LE CONTEXTE FINAL
         context = {
@@ -421,6 +420,7 @@ class ProductView(View):
             'product_features': product_features,
             'h1_title': h1_title,
             'is_page_product': True,
+            'similar_products': similar_products,
             'template_vars': {
                 'current_filial':current_filial,
                 'product_name': h1_title,

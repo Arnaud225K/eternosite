@@ -12,12 +12,14 @@ class Order(models.Model):
 	TYPE_CONSULTATION = 'consultation'
 	TYPE_PRICE_REQUEST = 'price_request'
 	TYPE_SERVICE_REQUEST = 'service_request'
+	TYPE_BUY_ONE_CLIC = 'buy_one_clic'
 	ORDER_TYPE_CHOICES = [
 		(TYPE_CART, 'Заявка из корзины'),
 		(TYPE_CALLBACK, 'Заказ обратного звонка'),
 		(TYPE_CONSULTATION, 'Запрос консультации'),
 		(TYPE_PRICE_REQUEST, 'Запрос цены'),
 		(TYPE_SERVICE_REQUEST, 'Заказ услуги'),
+		(TYPE_BUY_ONE_CLIC, 'Купить в 1 клик'),
 	]
 
 	order_key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, db_index=True)
