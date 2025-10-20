@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load catalog_tags %}
+
+
+{% block title_page %}
+    {% if current_menu.seo_title %}
+	    {{ current_menu.seo_title|my_safe:current_filial }}
+    {% else %}
+        {{ h1_title }}
+    {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% if current_menu.seo_keywords %}
+	    {{ current_menu.seo_keywords|my_safe:current_filial }}
+    {% else %}
+        {{ h1_title }}
+    {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+    {% if current_menu.seo_description %}
+	    {{ current_menu.seo_description|my_safe:current_filial }}
+    {% else %}
+        {{ h1_title }}  В {{ current_filial.name_info }}
+    {% endif %}
+{% endblock %}
+
+{% block title_page_og %}
+    {% if current_menu.seo_title %}
+	    {{ current_menu.seo_title|my_safe:current_filial }}
+    {% else %}
+        {{ h1_title }}
+    {% endif %}
+{% endblock %}
+
+{% block meta_description_og %}
+    {% if current_menu.seo_description %}
+	    {{ current_menu.seo_description|my_safe:current_filial }}
+    {% else %}
+        {{ h1_title }}  В {{ current_filial.name_info }}
+    {% endif %}
+{% endblock %}
+
+{% block page_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/contacts.css'%}">
+{% endblock %}
+
+
+
+{% block content %}
+    {% include "pages/contacts/p-contacts.html" %}
+{% endblock %}

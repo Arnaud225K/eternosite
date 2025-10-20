@@ -40,41 +40,37 @@
 
 {% block content %}
 
-<section class="service_page" data-product-id="{{ service.id }}">
+<section class="service_page" data-product-id="{{ current_service.id }}">
 	<div class="container">
 		{% include 'includes/elements/breadcrumb.html' %}
         {% csrf_token %}
 
 		<div class="service_page__wrapper">
 			<section class="service_page__text">
-				<h1>{{ service.title }}</h1>
+				<h1>{{ current_service.full_title }}</h1>
 				<div class="service_page__text-annotation">
-					<div class="textpage__text">
-						{{ service.description|safe }}
+					<div class="textpage__text seo__textblock">
+						{{ current_service.description|safe }}
 					</div>
 					<div class="service_page__text-image">
-                        <img src="{% if service.images.first %}{{ service.images.first.image.url }}{% else %}{% static 'img/images/default_image.webp' %}{% endif %}" 
-                            alt="{{ service.title }}">
+                        <img src="{% if current_service.images.first %}{{ current_service.images.first.image.url }}{% else %}{% static 'img/images/default_image.webp' %}{% endif %}" 
+                            alt="{{ current_service.title }}">
                     </div>
 				</div>
 			</section>
-
             <div class="service_page__right-column">
                 <aside class="service_page__aside">
                     <div class="price"> 
                         <span>Цена</span>
                         <span>
-                            {% if service.base_price > 0 %}
-                                {% if service.price_type == 'from' %}от {% endif %}
-                                {{ service.base_price|floatformat:"0" }} ₽
-                            {% else %}
-                                Договорная
-                            {% endif %}
+                            {% if current_service.display_price and current_service.price_type == 'from' %}от {% endif %}
+                            {{ current_service.display_price|format_price }}
+                            {% if current_service.display_price > 0 %} ₽{% endif %}
                         </span>
                     </div>
-                    <button class="addProduct addtocart {% if service.id in cart_product_ids %}purchased{% endif %}">
+                    <button class="addProduct addtocart {% if current_service.id in cart_product_ids %}purchased{% endif %}">
                         <span>
-                            {% if service.id in cart_product_ids %}
+                            {% if current_service.id in cart_product_ids %}
                                 В корзине
                             {% else %}
                                 В корзину

@@ -107,7 +107,8 @@ class CheckoutView(View):
                     product_title=item['product'].full_title,
                     price=Decimal(item['price']),
                     quantity=item['quantity'],
-                    price_type=item.get('price_type', Product.PRICE_TYPE_FIXED)
+                    price_type=item.get('price_type', Product.PRICE_TYPE_FIXED),
+                    item_type=item['product'].product_type
                 )
             
             order.calculate_total_cost()

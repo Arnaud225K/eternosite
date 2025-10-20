@@ -70,6 +70,7 @@ class OrderItem(models.Model):
 	price = models.DecimalField("Цена за единицу", max_digits=12, decimal_places=2)
 	quantity = models.PositiveIntegerField("Количество", default=1)
 	price_type = models.CharField("Тип цены", max_length=10, choices=Product.PRICE_TYPE_CHOICES, default=Product.PRICE_TYPE_FIXED)
+	item_type = models.CharField("Тип позиции", max_length=10, default=Product.TYPE_PRODUCT)
 
 
 	def get_cost(self):
@@ -86,3 +87,6 @@ class OrderItem(models.Model):
 	def __str__(self):
 		# return str(self.id)
 		return f"Заказ №{self.id}"
+	class Meta:
+		verbose_name = "Позиция в заявке" 
+		verbose_name_plural = "Позиции в заявке"

@@ -82,6 +82,14 @@ class Product(models.Model):
         (PRICE_TYPE_FROM, 'от'),
     ]
 
+    TYPE_PRODUCT = 'product'
+    TYPE_SERVICE = 'service'
+    PRODUCT_TYPE_CHOICES = [
+        (TYPE_PRODUCT, 'Товар'),
+        (TYPE_SERVICE, 'Услуга'),
+    ]
+
+
     base_name = models.CharField("Базовое название", max_length=200, blank=True, help_text="Основное название без характеристик, напр., 'Канат одинарной свивки'")
     title = models.CharField("Полное название", max_length=512, db_index=True, help_text="Название ручное")
     slug = models.SlugField("URL-ключ (слаг)", max_length=255, unique=True, db_index=True, blank=True)
@@ -98,16 +106,17 @@ class Product(models.Model):
     updated_at = models.DateTimeField("Обновлено", auto_now=True, editable=False)
     order_number = models.PositiveIntegerField("Порядок", default=100)
     search_vector = SearchVectorField(null=True, editable=False)
-    
+    product_type = models.CharField("Тип", max_length=10, choices=PRODUCT_TYPE_CHOICES, default=TYPE_PRODUCT, db_index=True)
     seo_title = models.CharField("SEO Заголовок (Title)", max_length=255, blank=True)
     seo_description = models.TextField("SEO Описание (Description)", blank=True)
     seo_keywords = models.TextField(verbose_name="Ключевые слова (мета)", blank=True, null=True)
-    
     related_services = models.ManyToManyField(
-        'Service', 
+        'self', 
         verbose_name="Сопутствующие услуги",
         blank=True,
+        symmetrical=False,
         related_name="products_offered_with",
+        limit_choices_to={'product_type': TYPE_SERVICE},
         help_text="Выберите услуги, которые будут предложены с этим товаром."
     )
     
@@ -225,36 +234,58 @@ class Product(models.Model):
             current_filial = current_filial.parent
         
         return self.base_price
-    
+
 
     def get_structured_features(self):
         """
         Retourne les filtres du produit sous forme de dictionnaire {nom_categorie: [valeur1, valeur2]}.
         Cette méthode est optimisée pour fonctionner avec prefetch_related('filters__category').
         """
-        # Utilise un cache sur l'instance pour éviter de recalculer si appelé plusieurs fois
+        # On Utilise un cache sur l'instance pour éviter de recalculer si appelé plusieurs fois
         if hasattr(self, '_structured_features_cache'):
             return self._structured_features_cache
 
         features = defaultdict(list)
-        # self.filters.all() utilisera le prefetch si disponible
         for fv in self.filters.all():
             features[fv.category.name].append(fv.value)
         
-        # Stocker le résultat dans le cache de l'instance
+        # On Stock le résultat dans le cache de l'instance
         self._structured_features_cache = dict(features)
         return self._structured_features_cache
 
     # def get_absolute_url(self):
     #     return reverse('menu:product', kwargs={'product_slug': self.slug})
+    # def get_absolute_url(self):
+    #     if hasattr(self, 'service'):
+    #         return reverse('products:service_detail', kwargs={'slug': self.slug})
+    #     return reverse('menu:product', kwargs={'product_slug': self.slug})
     def get_absolute_url(self):
-        # On vérifie si l'instance est un Service ou un Product
-        if hasattr(self, 'service'): # 'service' est le nom de la relation inverse créée par l'héritage
+        """
+        Génère l'URL correcte en fonction du type de l'article (produit ou service).
+        """
+        # --- CORRECTION APPLIQUÉE ICI ---
+        # On ne vérifie plus un attribut, mais la valeur du champ 'product_type'
+        if self.product_type == self.TYPE_SERVICE:
+            # Si c'est un service, on utilise l'URL des services
             return reverse('products:service_detail', kwargs={'slug': self.slug})
-        # Par défaut, c'est un produit
-        # Note: Assurez-vous d'avoir une URL nommée 'product_detail' quelque part
+        
+        # Sinon, par défaut, c'est un produit et on utilise l'URL des produits
         return reverse('menu:product', kwargs={'product_slug': self.slug})
 
+
+
+# 2. DÉFINITION ET ATTACHEMENT DES MANAGERS SPÉCIFIQUES
+class PhysicalProductManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(product_type=Product.TYPE_PRODUCT)
+
+class ServiceManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(product_type=Product.TYPE_SERVICE)
+
+
+Product.add_to_class('products', PhysicalProductManager())
+Product.add_to_class('services', ServiceManager())
 
 
 class ProductImage(models.Model):
@@ -319,26 +350,26 @@ class ProductFilialData(models.Model):
 
 
 
-class Service(Product):
-    """
-    Modèle pour les services. Hérite de Product pour pouvoir être traité
-    comme un produit standard (ajout au panier, prix, etc.).
-    """
-    # Product a déjà: base_name, title, slug, sku, category, description,
-    # base_price, price_type, is_hidden, etc.
+# class Service(Product):
+#     """
+#     Modèle pour les services. Hérite de Product pour pouvoir être traité
+#     comme un produit standard (ajout au panier, prix, etc.).
+#     """
+#     # Product a déjà: base_name, title, slug, sku, category, description,
+#     # base_price, price_type, is_hidden, etc.
     
-    # On peut ajouter des champs spécifiques aux services si besoin
-    # Par exemple :
-    # duration = models.DurationField("Durée estimée", blank=True, null=True)
+#     # On peut ajouter des champs spécifiques aux services si besoin
+#     # Par exemple :
+#     # duration = models.DurationField("Durée estimée", blank=True, null=True)
 
-    class Meta:
-        verbose_name = "Услуга"
-        verbose_name_plural = "Услуги"
+#     class Meta:
+#         verbose_name = "Услуга"
+#         verbose_name_plural = "Услуги"
 
-    def save(self, *args, **kwargs):
-        # On peut surcharger des logiques si besoin. Par exemple, forcer une catégorie.
-        # if not self.category_id:
-        #     # Assurez-vous d'avoir une catégorie "Services" dans votre MenuCatalog
-        #     service_category, _ = MenuCatalog.objects.get_or_create(name="Услуги", ...)
-        #     self.category = service_category
-        super().save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         # On peut surcharger des logiques si besoin. Par exemple, forcer une catégorie.
+#         # if not self.category_id:
+#         #     # Assurez-vous d'avoir une catégorie "Services" dans votre MenuCatalog
+#         #     service_category, _ = MenuCatalog.objects.get_or_create(name="Услуги", ...)
+#         #     self.category = service_category
+#         super().save(*args, **kwargs)

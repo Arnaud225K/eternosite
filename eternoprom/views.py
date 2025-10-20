@@ -164,25 +164,31 @@ def cart_context(request):
     d'IDs de produits disponibles dans le contexte de tous les templates.
     """
     cart = CartManager(request)
+
+    cart_data_from_session = request.session.get(settings.CART_SESSION_ID)
     
     cart_data = cart.get_cart_data()
     
-    product_id_strings = cart_data.keys()
+    # product_id_strings = cart_data.keys()
     
-    cart_product_ids_list = [int(pid) for pid in product_id_strings]
-    
-    cart_items_count = len(cart_product_ids_list)
+    # cart_product_ids = [int(pid) for pid in product_id_strings]
 
-    # --- Log pour débogage ---
-    # print(f"Context Processor - Product IDs in Cart: {cart_product_ids_list}")
+    cart_product_ids = [int(pid) for pid in cart_data.keys()]
+    
+    cart_items_count = len(cart_product_ids)
+
+    # # --- Log pour débogage ---
+    # print(f"Context Processor - Product IDs in Cart: {cart_product_ids}")
     # print(f"Context Processor - Unique Items Count: {cart_items_count}")
-    # ------------------------
+    # # ------------------------
+
+    # print(f"[CONTEXT_PROCESSOR] Données du panier trouvées dans la session : {cart_data_from_session}")
 
     return {
         'cart_object': cart,
         'cart_data': cart_data, 
         'cart_unique_items_count': cart_items_count,
-        'cart_product_ids': cart_product_ids_list,
+        'cart_product_ids': cart_product_ids,
     }
 
 

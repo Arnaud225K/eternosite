@@ -56,7 +56,7 @@ class ProductManager(models.Manager):
             products__in=product_queryset
         ).annotate(
             product_count=models.Count('products', distinct=True)
-        ).select_related('category') # Optimisation
+        ).select_related('category')
 
         structured_filters = defaultdict(lambda: {'name': '', 'slug': '', 'values': []})
         for fv in values_with_counts:

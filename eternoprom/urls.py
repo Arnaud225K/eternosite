@@ -57,7 +57,6 @@ urlpatterns += [
 
 if hasattr(settings, 'WWW_ROOT') and settings.WWW_ROOT and os.path.isdir(settings.WWW_ROOT):
     sitemap_root_pattern = r'^(?P<path>sitemap(?:_[\w\.-]*)?\.xml(?:\.gz)?)$'
-    # logger.info(f"Serving sitemap files from {settings.WWW_ROOT} with pattern {sitemap_root_pattern}")
     urlpatterns += [
         re_path(sitemap_root_pattern, serve, {'document_root': settings.WWW_ROOT}),
     ]

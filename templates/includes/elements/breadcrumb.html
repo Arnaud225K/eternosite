@@ -9,9 +9,9 @@
 			<li>Спецпредложения</li>
 		{% elif is_uslugi_page %}
 			<li>Услуги</li>
-		{% elif service %}
+		{% elif current_service %}
 			<li><a href="{% url 'products:service_list' %}">Услуги</a></li>
-			<li>{{ service.title }}</li>
+			<li>{{ current_service.title }}</li>
 		{% elif is_articles_page %}
 			<li>Статьи</li>
 		{% elif article %}

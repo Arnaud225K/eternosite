@@ -1,6 +1,5 @@
 from django.contrib import admin
-# from .models import (Product, ProductImage, ProductFilialData, FilterCategory, FilterValue)
-from .models import (Product, Service, ProductImage, ProductFilialData, FilterCategory, FilterValue)
+from .models import (Product, ProductImage, ProductFilialData, FilterCategory, FilterValue)
 from apps.utils.utils import format_price_admin, get_admin_product_image_thumbnail_html
 from apps.menu.models import MenuCatalog, TypeMenu
 
@@ -64,9 +63,9 @@ class ProductFilialDataInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'sku', 'display_product_image', 'price_type', 'display_formatted_price', 'category', 'order_number', 'is_hidden', 'created_at', 'updated_at')
+    list_display = ('id', 'title', 'product_type', 'sku', 'display_product_image', 'price_type', 'display_formatted_price', 'category', 'order_number', 'is_hidden', 'created_at', 'updated_at')
 
-    list_filter = (CategoryFilter, 'is_hidden', 'price_type')
+    list_filter = ('product_type', CategoryFilter, 'is_hidden', 'price_type')
     search_fields = ('id','title', 'sku', 'description', 'category__name')
     filter_horizontal = ('filters',)
     list_display_links = ('id', 'title',)
@@ -80,6 +79,7 @@ class ProductAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Основная информация и Статус', 
             {'fields': (
+                'product_type',
                 'base_name', 
                 'title',
                 'slug', 
@@ -93,9 +93,12 @@ class ProductAdmin(admin.ModelAdmin):
         ('Контент и Цены', {
             'fields': ('description', ('price_type', 'base_price'), 'unit',) 
         }),
-        ('Статус и Фильтры', 
+        ('Фильтры', 
             {'fields': ( 'filters',)} 
         ),
+        ('Связанные Услуги', {
+            'fields': ('related_services',) 
+        }),
     )
 
 
@@ -115,25 +118,4 @@ class ProductAdmin(admin.ModelAdmin):
         Optimise le chargement des données pour la liste des produits.
         """
         qs = super().get_queryset(request)
-        # return qs.select_related('category').prefetch_related('images__gallery_image')
-        return qs.select_related('category').prefetch_related('images__gallery_image').filter(service__isnull=True)
-    
-
-
-
-@admin.register(Service)
-class ServiceAdmin(ProductAdmin):
-    """
-    Classe Admin pour les Services. Elle hérite de toutes les configurations de ProductAdmin,
-    ce qui nous évite de tout réécrire.
-    """
-    
-    def get_queryset(self, request):
-        """
-        S'assure que cette vue ne montre QUE les services.
-        On utilise le queryset de base de ProductAdmin pour garder les optimisations.
-        """
-        # On ne peut pas appeler super().get_queryset() car il exclut les services.
-        # On doit réimplémenter la base.
-        qs = super(admin.ModelAdmin, self).get_queryset(request)
         return qs.select_related('category').prefetch_related('images__gallery_image')

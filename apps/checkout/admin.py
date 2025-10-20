@@ -4,26 +4,59 @@ from django.utils.html import format_html
 from rangefilter.filters import DateRangeFilterBuilder
 from apps.utils.utils import format_price_admin, format_price_with_type_admin
 from apps.products.models import Product 
+from django.urls import reverse
 
 
+# class OrderItemInline(admin.TabularInline):
+#     model = OrderItem
+#     fields = ('product', 'product_title', 'display_formatted_price', 'quantity', 'get_cost_display')
+#     readonly_fields = ('product', 'product_title', 'display_formatted_price', 'quantity', 'get_cost_display')
+#     extra = 0
+#     can_delete = False
+    
+#     def display_formatted_price(self, obj):
+#         """Affiche le prix formaté pour cet article, en incluant 'от' si nécessaire."""
+#         return format_price_with_type_admin(obj.price, obj.price_type)
+#     display_formatted_price.short_description = 'Цена за ед.'
 
+#     def get_cost_display(self, obj):
+#         """Affiche le coût total formaté pour cette ligne."""
+#         return format_price_with_type_admin(obj.get_cost(), obj.price_type)
+#     get_cost_display.short_description = 'Стоимость'
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
-    fields = ('product', 'product_title', 'display_formatted_price', 'quantity', 'get_cost_display')
-    readonly_fields = ('product', 'product_title', 'display_formatted_price', 'quantity', 'get_cost_display')
+    fields = ('display_product_link', 'item_type', 'display_formatted_price', 'quantity', 'get_cost_display')
+    readonly_fields = ('display_product_link', 'item_type', 'display_formatted_price', 'quantity', 'get_cost_display')
     extra = 0
     can_delete = False
-    
+
+    def display_product_link(self, obj):
+        """
+        Affiche le nom du produit comme un lien vers sa page d'édition dans l'admin.
+        Gère le cas où le produit a été supprimé.
+        """
+        if obj.product:
+            url = reverse('admin:products_product_change', args=[obj.product.pk])
+            return format_html('<a href="{}" target="_blank">{}</a>', url, obj.product_title)
+        return f"{obj.product_title} (удален)"
+    display_product_link.short_description = 'Товар / Услуга'
+
     def display_formatted_price(self, obj):
-        """Affiche le prix formaté pour cet article, en incluant 'от' si nécessaire."""
         return format_price_with_type_admin(obj.price, obj.price_type)
     display_formatted_price.short_description = 'Цена за ед.'
 
     def get_cost_display(self, obj):
-        """Affiche le coût total formaté pour cette ligne."""
         return format_price_with_type_admin(obj.get_cost(), obj.price_type)
     get_cost_display.short_description = 'Стоимость'
+    
+    def item_type(self, obj):
+        """Affiche le type de l'article (Товар ou Услуга)."""
+        if obj.product:
+            return obj.product.get_product_type_display()
+        return "N/A"
+    item_type.short_description = 'Тип'
+
 
 
 @admin.register(Order)

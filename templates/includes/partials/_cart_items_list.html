@@ -13,7 +13,12 @@
         src="{% if item.product.images.first %}{{ item.product.images.first.image.url }}{% else %}{% static 'img/images/default_image.webp' %}{% endif %}" 
         alt="{{ item.product.title }}">
 
-    <a class="cart__item-name" href="{{ item.product.get_absolute_url }}">{{ item.product.title }}</a>
+    <a class="cart__item-name" href="{{ item.product.get_absolute_url }}">
+        {{ item.product.title }}
+        {% if item.product.product_type == 'service' %}
+            <span class="cart__item-badge">Услуга</span>
+        {% endif %}
+    </a>
 
     <div class="cart__item-controls subcategory__product-counter">
         <button class="minus">-</button>

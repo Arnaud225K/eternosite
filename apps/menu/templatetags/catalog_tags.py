@@ -8,7 +8,7 @@ from apps.filial.models import Filial
 from django.utils.safestring import mark_safe, SafeString
 from django.conf import settings
 from functools import lru_cache
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from django.utils.html import strip_tags
 from html import unescape
@@ -117,9 +117,31 @@ def remove_space_href(value):
 
 # @register.filter(name='format_price')
 # def format_price(value):
-#     if value is not None:
-#         return f"{value:,.0f}".replace(",", " ")
-#     return "0"
+#     """
+#     Filtre de template pour formater un prix pour l'affichage public.
+#     - Si le prix est 0, retourne "Договорная".
+#     - Sinon, formate le nombre avec un séparateur pour les milliers.
+#     - Gère les valeurs None en retournant "по запросу" ou similaire.
+#     """
+#     if value is None:
+#         return "по запросу"
+
+#     try:
+#         price_decimal = Decimal(value)
+#     except (ValueError, TypeError):
+#         return "по запросу"
+
+
+#     if price_decimal == 0:
+#         return "Договорная"
+
+#     try:
+#         price_int = int(price_decimal)
+#         return f"{price_int:,}".replace(",", " ")
+#     except (ValueError, TypeError):
+#         return "по запросу"
+
+
 @register.filter(name='format_price')
 def format_price(value):
     """
@@ -128,25 +150,31 @@ def format_price(value):
     - Sinon, formate le nombre avec un séparateur pour les milliers.
     - Gère les valeurs None en retournant "по запросу" ou similaire.
     """
-    if value is None:
-        return "по запросу" # "Sur demande" - vous pouvez changer ce texte
+    if value is None or value == '':
+        return "по запросу"
 
+    # try:
+    #     price_decimal = Decimal(value)
+    # except (ValueError, TypeError):
+    #     return "по запросу"
     try:
+        # Tenter de convertir en Decimal. Gère les nombres, les chaînes, etc.
         price_decimal = Decimal(value)
-    except (ValueError, TypeError):
-        return "по запросу" # Gère le cas où la valeur n'est pas un nombre
+    except InvalidOperation:
+        # Si la conversion échoue (ex: on passe un objet), retourner un texte par défaut.
+        return "Договорная"
 
-    # --- LA CONDITION CLÉ EST ICI ---
-    # On vérifie si le prix est égal à zéro.
     if price_decimal == 0:
-        return "Договорная" # "Négociable" ou "Prix contractuel"
+        return "Договорная"
 
-    # Le reste de la logique de formatage
     try:
         price_int = int(price_decimal)
         return f"{price_int:,}".replace(",", " ")
     except (ValueError, TypeError):
         return "по запросу"
+
+
+
 
 
 @register.filter

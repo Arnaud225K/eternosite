@@ -36,6 +36,11 @@
                                             {{ item.price|format_price }} ₽
                                         {% endif %})
                                     </span>
+                                                                        <span class="item-product-type">
+                                    {% if item.product.product_type == 'service' %}
+                                        <span class="service-badge">Услуга</span>
+                                    {% endif %}
+                                    </span>
                                     
                                     <span class="item-total">
                                         <strong>

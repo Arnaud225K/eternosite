@@ -12,8 +12,9 @@
         </div> 
         <input type="hidden" name="form_render_timestamp" value="{{ form_render_timestamp_value }}">
         <input type="hidden" name="type" value="buy_one_clic">
+        <input type="hidden" name="comment" value="{{ product.full_title }}">  
         
-        <input id="product__buy-tel" type="tel" name="phone" placeholder="+7-000-000-00-00*" required data-phone>
+        <input id="product__buy-tel" type="tel" name="phone" placeholder="+7 999 999-99-99*" required data-phone>
         <div id="phone-error" class="phone-error" style="display:none; color:red;">Неправильный номер телефона</div>
 
         <button class="form__submit" type="submit">Отправить</button>
@@ -23,9 +24,9 @@
                 <label class="form__checkbox">
                     <input type="checkbox" name="agreement">
                     <div class="custom-icon"></div>
-                    <div class="form__checkmark"><span> Я даю своё согласие на обработку моих персональных данных в
-                        соответствии с законом №152-ФЗ "О персональных данных" и&nbsp;</span><a class="policy"
-                            href="/docs/privacy.pdf" target="_blank" rel="noopener">Политикой обработки персональных
+                    <div class="form__checkmark">
+                        <span> Я даю своё согласие на обработку моих персональных данных в соответствии с законом №152-ФЗ "О персональных данных" и&nbsp;</span>
+                        <a class="policy" href="/docs/privacy.pdf" target="_blank" rel="noopener">Политикой обработки персональных
                         данных</a>
                     </div>
                 </label>

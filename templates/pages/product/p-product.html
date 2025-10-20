@@ -47,14 +47,19 @@
             <aside class="product__price">
 				<div> 
                     <span>Цена</span>
-                    {% if product.display_price > 0 %}
+                    {% comment %} {% if product.display_price > 0 %}
                         <span>
                             {% if product.price_type == 'from' %}от {% endif %}
                             {{ product.display_price|format_price }} ₽
                         </span>
                     {% else %}
                         <span>{{ product.display_price|format_price }}</span>
-                    {% endif %}
+                    {% endif %} {% endcomment %}
+                    <span>
+                    {% if product.display_price and product.price_type == 'from' %}от {% endif %}
+                    {{ product.display_price|format_price }}
+                    {% if product.display_price > 0 %} ₽{% endif %}
+                    </span>
                 </div>
 				<button class="addProduct addtocart {% if product.id in cart_product_ids %}purchased{% endif %}">
                     <span>
