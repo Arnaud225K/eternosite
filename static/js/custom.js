@@ -103,11 +103,19 @@
 
 
     window.updateHeaderCartCounter = function(count) {
-        const counterElement = document.getElementById('header-cart-count');
-        if (!counterElement) return;
+        const counterElements = document.querySelectorAll('.cart-counter');
+        if (counterElements.length === 0) {
+            return;
+        }
         const countNum = parseInt(count, 10) || 0;
-        counterElement.textContent = countNum;
-        counterElement.style.display = countNum > 0 ? 'flex' : 'none';
+        counterElements.forEach(counter => {
+            counter.textContent = countNum;
+            if (countNum > 0) {
+                counter.classList.remove('hidden');
+            } else {
+                counter.classList.add('hidden');
+            }
+        });
     };
 
     async function sendCartRequest(url, body = null) {
@@ -152,72 +160,6 @@
     // SECTION 2 : GESTION DES ÉVÉNEMENTS
 
     document.addEventListener("DOMContentLoaded", () => {
-
-        // document.body.addEventListener('click', async function(event) {
-            
-        //     const addButton = event.target.closest('.addtocart');
-        //     if (addButton) {
-        //         event.preventDefault();
-                
-        //         // const productContainer = addButton.closest('.subcategory__product, section.product');
-                    
-        //         const productContainer = addButton.closest('.subcategory__product, section.product, section.service_page');
-
-        //         if (!productContainer) {
-        //             console.error("Could not find product container for the add to cart button.");
-        //             return;
-        //         }
-                
-        //         if (productContainer.classList.contains('purchased') || addButton.classList.contains('purchased')) {
-        //             window.location.href = '/checkout/'; 
-        //             return; 
-        //         }
-            
-        //         const productId = productContainer.dataset.productId;
-        //         if (!productId) {
-        //             console.error("Product ID not found on container.", productContainer);
-        //             return;
-        //         }
-                
-        //         const quantityInput = productContainer.querySelector('.amount');
-        //         const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 1;
-            
-        //         addButton.disabled = true;
-            
-        //         const data = await sendCartRequest(`/checkout/cart/add/${productId}/`, { quantity: quantity });
-                
-        //         if (data && data.success) {
-        //             document.querySelectorAll(`.subcategory__product[data-product-id="${productId}"], section.product[data-product-id="${productId}"]`).forEach(container => {
-        //                 container.classList.add('purchased');
-        //                 const btn = container.querySelector('.addtocart');
-        //                 if(btn) {
-        //                     const btnSpan = btn.querySelector('span');
-        //                     if (btnSpan) btnSpan.textContent = 'В корзине';
-        //                     btn.classList.add('purchased');
-        //                 }
-        //             });
-        //             window.updateHeaderCartCounter(data.cart_unique_items_count);
-        //         }
-        //         addButton.disabled = false;
-        //         return;
-        //     }
-
-        //     const quantityButton = event.target.closest('.subcategory__product .plus, .subcategory__product .minus');
-        //     if (quantityButton) {
-        //         const productCard = quantityButton.closest('.subcategory__product');
-                
-        //         const quantityInput = productCard.querySelector('.amount');
-        //         if (quantityInput) {
-        //             let currentValue = parseInt(quantityInput.value, 10) || 1;
-        //             if (quantityButton.matches('.plus')) {
-        //                 quantityInput.value = currentValue + 1;
-        //             } else if (quantityButton.matches('.minus') && currentValue > 1) {
-        //                 quantityInput.value = currentValue - 1;
-        //             }
-        //         }
-        //         return;
-        //     }
-        // });
             
         document.body.addEventListener('click', async function(event) {
             const addButton = event.target.closest('.addtocart');

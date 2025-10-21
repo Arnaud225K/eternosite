@@ -29,6 +29,10 @@ class ProjectSettingsAdmin(SingletonModelAdmin):
         ('О компании', {
             'fields': ('type_company', 'count_staff', 'start_year')
         }),
+        ('Юридические документы', {
+            'fields': ('privacy_policy_file', 'marketing_agreement_file'),
+            'description': "Файлы для ссылок в формах на сайте."
+        }),
         ('Глобальные контактные данные', {
             'description': "Эти данные будут использоваться, если для конкретного филиала не указаны свои.",
             'fields': ('main_phone', 'main_email', 'main_address', 'main_working_hours', 'main_map_code')

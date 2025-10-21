@@ -1586,6 +1586,27 @@ h1 {
 }
 
 
+.tabbar-cart-counter {
+    position: absolute;
+    top: 5px;
+    right: 190px;
+    background: #850003;
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    padding: 10px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.tabbar-cart-counter.hidden {
+    display: none;
+}
+
+
 /* Message d'erreur */
 .alert-error {
     padding: 15px 20px;

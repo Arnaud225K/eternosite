@@ -16,6 +16,19 @@ class ProjectSettings(SingletonModel):
 	count_staff = models.CharField(max_length=256, verbose_name="Количество сотрудников", blank=True, null=True)
 	start_year = models.CharField(max_length=50, verbose_name="Год основания", blank=True, null=True)
 
+	privacy_policy_file = models.FileField(
+		"Файл 'Политика обработки персональных данных'",
+		upload_to='docs/',
+		blank=True, null=True,
+		help_text="Загрузите PDF файл с политикой конфиденциальности."
+	)
+	marketing_agreement_file = models.FileField(
+		"Файл 'Согласие на получение материалов'",
+		upload_to='docs/',
+		blank=True, null=True,
+		help_text="Загрузите PDF файл с условиями рекламной рассылки (если требуется)."
+	)
+
 	main_phone = models.CharField("Основной телефон", max_length=50, blank=True)
 	main_email = models.EmailField("Основной email", max_length=254, blank=True)
 	main_address = models.CharField("Основной адрес", max_length=255, blank=True)

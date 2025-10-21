@@ -75,7 +75,11 @@
                     <div class="custom-icon"></div>
                     <div class="form__checkmark">
                         <span> Я даю своё согласие на обработку моих персональных данных в соответствии с законом №152-ФЗ "О персональных данных" и&nbsp;</span>
-                        <a class="policy" href="/docs/privacy.pdf" target="_blank" rel="noopener">Политикой обработки персональных данных</a>
+                        {% if project_settings.privacy_policy_file %}
+                            <a class="policy" href="{{ project_settings.privacy_policy_file.url }}" target="_blank" rel="noopener">Политикой обработки персональных данных</a>
+                        {% else %}
+                            <a class="policy" href="#" target="_blank" rel="noopener">Политикой обработки персональных данных</a>
+                        {% endif %}
                     </div>
                 </label>
                 {% if form.agreement.errors %}
@@ -88,7 +92,11 @@
                     {{ form.marketing_consent }}
                     <div class="custom-icon"></div>
                     <div class="form__checkmark">
+                    {% if project_settings.marketing_agreement_file %}
+                        <span> Я соглашаюсь получать <a class="policy" href="{{ project_settings.marketing_agreement_file.url }}">информационно-рекламные</a> материалы</span>
+                    {% else %}
                         <span> Я соглашаюсь получать информационно-рекламные материалы</span>
+                    {% endif %}                    
                     </div>
                 </label>
                 {% if form.marketing_consent.errors %}

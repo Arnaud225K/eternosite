@@ -91,7 +91,7 @@ class ProductAdmin(admin.ModelAdmin):
                 )
         }),
         ('Контент и Цены', {
-            'fields': ('description', ('price_type', 'base_price'), 'unit',) 
+            'fields': ('description', ('price_type', 'base_price'), 'unit', 'payment_and_delivery_info',) 
         }),
         ('Фильтры', 
             {'fields': ( 'filters',)} 

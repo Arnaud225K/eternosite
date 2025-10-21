@@ -56,7 +56,7 @@ class Filial(models.Model):
     ogrn_req = models.CharField(verbose_name="ОГРН", max_length=100, blank=True, null=True)
     oktmo_req = models.CharField(verbose_name="ОКТМО", max_length=100, blank=True, null=True)
     director_req = models.CharField(verbose_name="Директор (на основании устава)", max_length=100, blank=True, null=True)
-    requisites_file = models.FileField("Файл с реквизитами", upload_to='filials/requisites/', blank=True, null=True)
+    req_file = models.FileField("Файл с реквизитами", upload_to='filials/requisites/', blank=True, null=True)
     map_code = models.TextField("Код карты проезда", blank=True, help_text="HTML-код для вставки карты, например, с Яндекс.Карт.")
     seo_text_head = models.TextField("Блок в <head> для филиала", blank=True, help_text="Дополнительные скрипты или мета-теги, которые будут добавлены в <head>.")
     seo_text_body = models.TextField("Блок в <body> для филиала", blank=True,help_text="Дополнительные скрипты, которые будут добавлены в конце <body>.")

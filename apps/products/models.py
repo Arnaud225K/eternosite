@@ -119,6 +119,7 @@ class Product(models.Model):
         limit_choices_to={'product_type': TYPE_SERVICE},
         help_text="Выберите услуги, которые будут предложены с этим товаром."
     )
+    payment_and_delivery_info = CKEditor5Field("Информация 'Оплата и доставка'",config_name='extends',blank=True, help_text="будет отображаться во вкладке 'Оплата и доставка' на страницах товаров.")
     
 
     objects = ProductManager()

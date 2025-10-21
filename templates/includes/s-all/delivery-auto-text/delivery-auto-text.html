@@ -1,0 +1,17 @@
+{% load static %}
+{% load catalog_tags %}
+
+
+
+
+{% if is_page_product %}
+    {% if static_texts.delivery_auto_text|clean_html %}
+        <div class="delivery-auto-text">
+            {{ static_texts.delivery_auto_text|safe|my_safe:template_vars }}
+        </div>
+    {% else %}
+        <div class="delivery-auto-text">
+            <p>Условия оплаты и доставки</p>
+        </div>
+    {% endif %}
+{% endif %}

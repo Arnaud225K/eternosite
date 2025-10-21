@@ -14,11 +14,12 @@
 
         <input type="hidden" name="form_render_timestamp" value="{{ form_render_timestamp_value }}">
         <input type="hidden" name="type" value="consultation">
+        <input type="hidden" name="comment" value="{{ current_menu.name }}">
 
         <div class="pageform__content-inputs">
             <input type="text" name="name" placeholder="Имя">
             <input type="email" placeholder="mail@mail.mail*" required>
-            <input type="tel" id="form_phone" name="phone" required placeholder="+7-000-000-00-00*" data-phone>
+            <input type="tel" id="form_phone" name="phone" required placeholder="+7 999 999-99-99*" data-phone>
         </div>
 
         <div class="bloc__error_email">
@@ -35,10 +36,16 @@
                     <div class="custom-icon"></div>
                     <div class="form__checkmark">
                         <span> Я даю своё согласие на обработку моих персональных данных в соответствии с законом №152-ФЗ "О персональных данных" и&nbsp;</span>
-                        <a class="policy" href="/docs/privacy.pdf" target="_blank" rel="noopener">Политикой обработки персональных данных</a>
+                        {% if project_settings.privacy_policy_file %}
+                            <a class="policy" href="{{ project_settings.privacy_policy_file.url }}" target="_blank" rel="noopener">Политикой обработки персональных данных</a>
+                        {% else %}
+                            <a class="policy" href="#" target="_blank" rel="noopener">Политикой обработки персональных данных</a>
+                        {% endif %}
                     </div>
                 </label>
+
 				<div class="agreement-error form-error" style="display:none; color:red; margin-top: 5px;">Это поле обязательно для заполнения.</div>
+
             </div>
 
             <div class="form-group">
@@ -46,7 +53,11 @@
                     <input type="checkbox" name="marketing_consent">
                     <div class="custom-icon"></div>
                     <div class="form__checkmark">
+                    {% if project_settings.marketing_agreement_file %}
+                        <span> Я соглашаюсь получать <a class="policy" href="{{ project_settings.marketing_agreement_file.url }}">информационно-рекламные</a> материалы</span>
+                    {% else %}
                         <span> Я соглашаюсь получать информационно-рекламные материалы</span>
+                    {% endif %}
                     </div>
                 </label>
             </div>

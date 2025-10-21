@@ -7352,13 +7352,13 @@
                                 })(t);
                             }));
                     });
-                let g = new (i())("+7 (999)-999-99-99");
-                ["#callPhone", "#form_phone", "#product__buy-tel", "#cart__phone", "#service_page__aside-tel"].forEach(
-                    (e) => {
-                        const t = document.querySelectorAll(e);
-                        t.length > 0 && g.mask(t);
-                    }
-                ),
+                // let g = new (i())("+7 (999)-999-99-99");
+                // ["#callPhone", "#form_phone", "#product__buy-tel", "#cart__phone", "#service_page__aside-tel"].forEach(
+                //     (e) => {
+                //         const t = document.querySelectorAll(e);
+                //         t.length > 0 && g.mask(t);
+                //     }
+                // ),
                     document.querySelectorAll(".popular__item").forEach((e) => {
                         const t = e.querySelectorAll(".popular__icon img");
                         t.length < 2 ||

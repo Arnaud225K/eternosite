@@ -6,26 +6,31 @@
 
 <section class="contacts">
 	<div class="container">
-		<ul class="breadcrumps">
-			<li> <a href="/">Главная</a></li>
-			<li class="active"> <span>Контакты</span></li>
-		</ul>
-		<h1>Контакты</h1>
-		<div class="contacts__top">
+		{% include 'includes/elements/breadcrumb.html' %}
+
+
+		<h1>{{ h1_title }}</h1>
+		
+        <div class="contacts__top">
 			<div class="contacts__top-heading">С нами можно связаться</div>
-			<div class="contacts__top-wheels"> <img src="{% static 'img/icons/wheels_contacts.svg' %}" alt=""></div>
-			<div class="contacts__top-item phone">
+			<div class="contacts__top-wheels"> <img src="{% static 'img/icons/wheels_contacts.svg' %}" alt="contacts"></div>
+			{% if contact_phone %}
+            <div class="contacts__top-item phone">
 				<p class="contacts__top-item-subtitle">По телефону</p>
-				<a href="tel:+7 999 999 999"> +7 999 999 999</a>
+
+				<a href="tel:{{ contact_phone|remove_space_href }}"> {{ contact_phone }}</a>
 			</div>
+            {% endif %}
 			<div class="contacts__top-item email">
 				<p class="contacts__top-item-subtitle">По почте</p>
-				<a href="mailto:mail@mail.mail"> mail@mail.mail</a>
+				<a href="mailto:{{ contact_email }}"> {{ contact_email }}</a>
 			</div>
+            {% if current_filial.phone_dop %}
 			<div class="contacts__top-item phone_add">
 				<p class="contacts__top-item-subtitle">Бесплатно по РФ</p>
-				<a href="tel:+7 999 999 999"> 8 800 000 00 00</a>
+				<a href="tel:{{ current_filial.phone_dop|remove_space_href }}"> {{ current_filial.phone_dop }}</a>
 			</div>
+            {% endif %}
 		</div>
 		<div class="contacts__wrapper">
 			<div class="contacts__data">
@@ -34,24 +39,31 @@
 						<p class="contacts__data-subtitle">Название</p>
 						<p>ЭтерноПром</p>
 					</div>
+                    {% if current_filial.inn_req %}
 					<div>
 						<p class="contacts__data-subtitle">ИНН</p>
-						<p>111111111</p>
+						<p>{{ current_filial.inn_req }}</p>
 					</div>
+                    {% endif %}
 					<div>
 						<p class="contacts__data-subtitle">Адрес</p>
-						<p>г.Екатеринбург, Лиговский пр., д.2500 стр.5</p>
+                        {% if contact_address %}
+						<p>{{ contact_address }}</p>
+                        {% endif %}
 					</div>
+                    {% if contact_working_hours %}
 					<div>
 						<p class="contacts__data-subtitle">Часы работы</p>
-						<p>Пн-пт: 9:00 - 18:00</p>
+						<p>{{ contact_working_hours }}</p>
 					</div>
-					<div>
+                    {% endif %}
+					{% comment %} <div>
 						<p class="contacts__data-subtitle">Сертификаты компании</p>
 						<p>AAAEEEAAAA</p>
-					</div>
+					</div> {% endcomment %}
 				</div>
-				<a class="contacts__data-file" href="#">
+                {% if current_filial.req_file %}
+				<a class="contacts__data-file" href="{{ current_filial.req_file.url }}">
 					<span>Скачать реквизиты</span>
 					<svg width="24" height="24"
 						viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,11 +72,13 @@
 							fill="white"></path>
 					</svg>
 				</a>
+                {% endif %}
 			</div>
+            {% if contact_map_code %}
 			<div class="contacts__map">
-				<script type="text/javascript" charset="utf-8" async
-					src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A27540893ee8cd6b6305ec844ea64ecd4e980422d2143b45949d0e146deec9160&amp;width=100%25&amp;height=100%&amp;lang=ru_RU&amp;scroll=true"></script>
+				{{ contact_map_code|safe }}
 			</div>
+            {% endif %}
 		</div>
 	</div>
 </section>

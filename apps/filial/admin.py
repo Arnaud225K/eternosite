@@ -23,7 +23,7 @@ class FilialAdmin(admin.ModelAdmin):
         ('Реквизиты Компании', {
             'classes': ('collapse',),
             'fields': (
-                'full_name_req', 'short_name_req', 'requisites_file', 'director_req',
+                'full_name_req', 'short_name_req', 'req_file', 'director_req',
                 ('inn_req', 'kpp_req'),
                 'yr_address_req', 'fact_address_req',
                 ('bank_req', 'ogrn_req'),

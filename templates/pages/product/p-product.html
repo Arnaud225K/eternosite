@@ -47,14 +47,6 @@
             <aside class="product__price">
 				<div> 
                     <span>Цена</span>
-                    {% comment %} {% if product.display_price > 0 %}
-                        <span>
-                            {% if product.price_type == 'from' %}от {% endif %}
-                            {{ product.display_price|format_price }} ₽
-                        </span>
-                    {% else %}
-                        <span>{{ product.display_price|format_price }}</span>
-                    {% endif %} {% endcomment %}
                     <span>
                     {% if product.display_price and product.price_type == 'from' %}от {% endif %}
                     {{ product.display_price|format_price }}
