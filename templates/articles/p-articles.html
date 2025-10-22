@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load catalog_tags %}
+
+
+{% block meta_description %}
+    {% if article.keywords_description %}
+	    {{ article.keywords_description|my_safe:current_filial }}
+    {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% if article.keywords %}
+	    {{ article.keywords|my_safe:current_filial }}
+    {% endif %}
+{% endblock %}
+
+{% block title_page %}
+    {% if article.name %}
+	    {{ article.name|my_safe:current_filial }}
+    {% endif %}
+{% endblock %}
+
+{% block title_page_og %}
+    {% if article.name %}
+	    {{ article.name|my_safe:current_filial }}
+    {% endif %}
+{% endblock %}
+
+{% block meta_description_og %}
+    {% if article.keywords_description %}
+	    {{ article.keywords_description|my_safe:current_filial }}
+    {% endif %}
+{% endblock %}
+
+
+
+{% block page_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/articles_detail.css'%}">
+{% endblock %}
+
+{% block content %}
+{% comment %} <section class="article_detail">
+    <div class="container">
+        {% include 'includes/elements/breadcrumb.html' %}
+        
+        <div class="article-detail">
+            <h1>{{ article.name }}</h1>
+            
+            {% if article.image %}
+                <div class="article-detail__image">
+                    <img src="{{ article.image.url }}" alt="{{ article.name }}">
+                </div>
+            {% endif %}
+            
+            <div class="article-detail__text">
+                <div class="article-detail__description">
+                    {{ article.description|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section> {% endcomment %}
+<section class="article_detail">
+    <div class="container">
+        {% include 'includes/elements/breadcrumb.html' %}
+        
+        <div class="article-detail">
+            <div class="article-detail__header">
+                <h1>{{ article.name }}</h1>
+            </div>
+            
+            <div class="article-detail__wrapper">
+                <div class="article-detail__content">
+                    <div class="article-detail__description">
+                        {{ article.text|safe }}
+                    </div>
+                </div>
+                
+                <div class="article-detail__sidebar">
+                    {% if article.image %}
+                        <div class="article-detail__image">
+                            <img src="{{ article.image.url }}" alt="{{ article.name }}">
+                        </div>
+                    {% endif %}
+                    
+                    <div class="article-detail__meta">
+                        {% comment %} <h3>Информация</h3> {% endcomment %}
+                        {% if article.date %}
+                            <p><strong>Дата публикации:</strong> {{ article.date|date:"d.m.Y" }}</p>
+                        {% endif %}
+                        {% if article.updated_at %}
+                            <p><strong>Обновлено:</strong> {{ article.updated_at|date:"d.m.Y" }}</p>
+                        {% endif %}
+                        {% if article.category %}
+                            <p><strong>Категория:</strong> {{ article.category.name }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

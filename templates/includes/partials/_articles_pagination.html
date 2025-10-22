@@ -1,0 +1,33 @@
+{% if articles.has_other_pages %}
+<div class="articles__showmore">
+    
+    {% if articles.has_next %}
+        <button class="articles__showmore-button"
+                data-next-page="{{ articles.next_page_number }}">
+            Показать еще 
+        </button>
+    {% endif %}    
+    
+    <div class="pagination">
+        {% if articles.has_previous %}
+            <a class="arrow arrow-left" href="?page={{ articles.previous_page_number }}"></a>
+        {% endif %}
+            
+        {% for page_num in articles.paginator.page_range %}
+            {% if articles.number == page_num %}
+                <span class="pagination__num current">{{ page_num }}</span>
+            
+            {% elif page_num > articles.number|add:-3 and page_num < articles.number|add:3 %}
+                <a class="pagination__num" href="?page={{ page_num }}">{{ page_num }}</a>
+            
+            {% elif page_num == articles.paginator.page_range|first or page_num == articles.paginator.page_range|last %}
+                <span class="pagination__skip">...</span>
+            {% endif %}
+        {% endfor %}
+            
+        {% if articles.has_next %}
+            <a class="arrow arrow-right" href="?page={{ articles.next_page_number }}"></a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

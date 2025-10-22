@@ -6,8 +6,8 @@ from . import settings
 import os
 from django.conf.urls.static import static
 from .settings import SITE_NAME
-# from .views import page404, page500
-# from .views import page404, page500
+from .views import page404, page500
+from .views import page404, page500
 import logging
 from apps.gallery.views import custom_ckeditor_upload
 
@@ -18,8 +18,8 @@ admin.site.site_header = SITE_NAME
 admin.site.site_title = SITE_NAME
 
 
-# handler404 = page404
-# handler500 = page500
+handler404 = page404
+handler500 = page500
 
 
 urlpatterns = [
@@ -42,6 +42,7 @@ urlpatterns += [
     # path('uslugi/', include('apps.uslugi.urls', namespace='uslugi')),
     # path('articles/', include('apps.articles.urls', namespace='articles')),
     path('checkout/', include('apps.checkout.urls')),
+    path('', include('apps.articles.urls', namespace='articles')),
     path('', include('apps.products.urls', namespace='products')),
     path('',include('apps.menu.urls')),
     # --- CUSTOM LIBRARY URL ---

@@ -393,4 +393,203 @@
         });
     });
 
+    //ARTICLE
+    document.addEventListener('DOMContentLoaded', function() {
+        "use strict";
+
+        const articlesSection = document.getElementById('articles-section-container');
+        if (!articlesSection) return;
+
+        const tabsContainer = articlesSection.querySelector('.articles__tabs');
+        const articlesWrapper = document.getElementById('articles-wrapper');
+        const paginationWrapper = document.getElementById('articles-pagination');
+        
+        const baseApiUrl = articlesSection.dataset.apiUrl;
+        if (!baseApiUrl) {
+            console.error("CRITICAL: data-api-url is missing on #articles-section-container.");
+            return;
+        }
+
+        async function fetchAndUpdateArticles(url, append = false, button = null) {
+            articlesSection.classList.add('loading');
+            if (button) { button.disabled = true; button.textContent = 'Загрузка...'; }
+            
+            try {
+                const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!response.ok) throw new Error(`Network error: ${response.status}`);
+                const data = await response.json();
+                
+                if (append) {
+                    if (articlesWrapper && data.html_articles) {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = data.html_articles;
+                        Array.from(tempDiv.children).forEach(child => articlesWrapper.appendChild(child));
+                    }
+                } else {
+                    if (articlesWrapper) {
+                        articlesWrapper.innerHTML = data.html_articles || '<p style="text-align:center; padding: 20px;">Статьи не найдены.</p>';
+                    }
+                }
+                
+                if (paginationWrapper) {
+                    paginationWrapper.innerHTML = data.html_pagination || '';
+                }
+
+                if (window.history.pushState) {
+                    const params = new URLSearchParams(url.split('?')[1] || '');
+                    const categorySlug = params.get('category_slug');
+                    const pageNum = params.get('page');
+
+                    let newPageUrl = '/articles/';
+
+                    if (categorySlug) {
+                        newPageUrl = `/articles/category/${categorySlug}/`;
+                    }
+
+                    if (pageNum && parseInt(pageNum, 10) > 1) {
+                        newPageUrl += `?page=${pageNum}`;
+                    }
+
+                    history.pushState({ path: newPageUrl }, '', newPageUrl);
+                }
+            } catch (error) {
+                console.error("Error updating articles:", error);
+                if(button) button.textContent = 'Ошибка';
+            } finally {
+                articlesSection.classList.remove('loading');
+            }
+        }
+
+        if (tabsContainer) {
+            tabsContainer.addEventListener('click', function(event) {
+                const tabLink = event.target.closest('.articles__tabs-item');
+                if (!tabLink) return;
+                event.preventDefault();
+                tabsContainer.querySelectorAll('.articles__tabs-item').forEach(tab => tab.classList.remove('active'));
+                tabLink.classList.add('active');
+                
+                const url = new URL(tabLink.href);
+                const pathParts = url.pathname.split('/');
+                let categorySlug = null;
+                if (pathParts.includes('category')) {
+                    categorySlug = pathParts[pathParts.indexOf('category') + 1];
+                }
+                
+                let apiUrl = `${baseApiUrl}?page=1`;
+                if (categorySlug) {
+                    apiUrl += `&category_slug=${categorySlug}`;
+                }
+                fetchAndUpdateArticles(apiUrl);
+            });
+        }
+
+        articlesSection.addEventListener('click', function(event) {
+            const target = event.target;
+            
+            let currentCategorySlug = null;
+            const activeTab = tabsContainer.querySelector('.articles__tabs-item.active');
+            if (activeTab) {
+                const url = new URL(activeTab.href);
+                const pathParts = url.pathname.split('/');
+                if (pathParts.includes('category')) {
+                    currentCategorySlug = pathParts[pathParts.indexOf('category') + 1];
+                }
+            }
+
+            const paginationLink = target.closest('.pagination a');
+            if (paginationLink) {
+                event.preventDefault();
+                const pageQueryString = new URL(paginationLink.href).search;
+                let apiUrl = `${baseApiUrl}${pageQueryString}`;
+                if (currentCategorySlug) {
+                    apiUrl += `&category_slug=${currentCategorySlug}`;
+                }
+                fetchAndUpdateArticles(apiUrl);
+            }
+
+            const loadMoreBtn = target.closest('.articles__showmore-button');
+            if (loadMoreBtn) {
+                event.preventDefault();
+                const nextPage = loadMoreBtn.dataset.nextPage;
+                if (!nextPage) return;
+                let apiUrl = `${baseApiUrl}?page=${nextPage}`;
+                if (currentCategorySlug) {
+                    apiUrl += `&category_slug=${currentCategorySlug}`;
+                }
+                fetchAndUpdateArticles(apiUrl, true, loadMoreBtn);
+            }
+        });
+    });
+
+    //MEGA MENU HEADER
+    document.addEventListener("DOMContentLoaded", () => {
+        
+        // --- LOGIQUE DE CHARGEMENT AJAX DU MENU ---
+        const desktopMenuContainer = document.querySelector('.cat_menu');
+        const mobileMenuContainer = document.querySelector('.aside-menu__track');
+        const catalogBtn = document.querySelector('.catalog__btn');
+        const mobileMenuTrigger = document.querySelector('[data-open-menu]');
+
+        async function loadMenuContent() {
+            // Ne charger qu'une seule fois
+            if (desktopMenuContainer.dataset.menuDesktopLoaded === 'true') return;
+            
+            desktopMenuContainer.classList.add('loading');
+
+            try {
+                const response = await fetch("/ajax/get-mega-menu/", { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!response.ok) throw new Error("Failed to fetch menu");
+                const data = await response.json();
+
+                // Injecter le contenu HTML
+                desktopMenuContainer.innerHTML = data.html_desktop;
+                mobileMenuContainer.innerHTML = data.html_mobile;
+
+                desktopMenuContainer.dataset.menuDesktopLoaded = 'true';
+                
+                // Activer les onglets du menu desktop
+                initializeDesktopTabs();
+                
+            } catch (error) {
+                console.error("Error loading menu:", error);
+                desktopMenuContainer.innerHTML = '<div class="cat_menu__container"><p>Ошибка загрузки меню.</p></div>';
+            } finally {
+                desktopMenuContainer.classList.remove('loading');
+            }
+        }
+
+        // Déclencher le chargement au survol ou au clic
+        if (catalogBtn) {
+            catalogBtn.addEventListener('mouseenter', loadMenuContent);
+        }
+        if (mobileMenuTrigger) {
+            mobileMenuTrigger.addEventListener('click', loadMenuContent);
+        }
+
+        // --- VOTRE LOGIQUE D'UI EXISTANTE ---
+
+        // Logique pour les onglets du menu desktop
+        function initializeDesktopTabs() {
+            const menuWrapper = document.querySelector('[data-tabs="catalog"]');
+            if (!menuWrapper) return;
+            
+            const tablinks = menuWrapper.querySelectorAll('.tablink');
+            const tabcontents = menuWrapper.querySelectorAll('.tabcontent');
+
+            tablinks.forEach(tab => {
+                tab.addEventListener('mouseenter', function() {
+                    tablinks.forEach(t => t.classList.remove('active'));
+                    tabcontents.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    const targetId = this.getAttribute('data-target');
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.classList.add('active');
+                    }
+                });
+            });
+        }
+    });
+
+
 })();

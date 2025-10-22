@@ -77,7 +77,7 @@ INSTALLED_APPS = [
     # 'apps.offers',
     'apps.checkout',
     # 'apps.uslugi',
-    # 'apps.articles',
+    'apps.articles',
     # 'apps.reviews',
     'apps.gallery',
     # 'apps.import_export',

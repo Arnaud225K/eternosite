@@ -7,7 +7,7 @@ app_name = 'menu'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
-    # path('ajax/get-mega-menu/', views.AjaxMegaMenuView.as_view(), name='ajax_get_mega_menu'),
+    path('ajax/get-mega-menu/', views.AjaxMegaMenuView.as_view(), name='ajax_get_mega_menu'),
     # path('offers/<slug:slug>/', views.OfferCollectionDetailView.as_view(), name='offer_collection_detail'),
     path('product/<str:product_slug>/', views.ProductView.as_view(), name='product'),
     re_path(r'^api/filter/(?P<hierarchical_slug>[\w\/-]+)/(?P<filter_segment>f\/.*)$', views.FilterProductsAPIView.as_view(), name='api_filter_products_with_segment'),

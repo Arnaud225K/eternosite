@@ -1,0 +1,62 @@
+{% load static %}    
+
+
+<section class="delivery">
+	<div class="container">
+		{% include 'includes/elements/breadcrumb.html' %}
+        
+		<h1>{{ h1_title }}</h1>
+
+		<div class="delivery__wrapper">
+			<div class="delivery__wrapper-inner">
+				<div class="delivery__payment">
+					<div class="delivery__title">Заказ и оплата товара</div>
+					<div class="delivery__payment-box">
+						<div class="delivery__descr">
+							<div class="delivery__descr-caption">Вы оставляете заявку</div>
+							<div class="delivery__descr-text">Заявку можно оставить онлайн, позвонив нам по телефону:
+								{{ contact_phone }} или связаться с нами по почте: {{ contact_email }}
+							</div>
+						</div>
+						<div class="delivery__descr">
+							<div class="delivery__descr-caption">С вами связывается менеджер</div>
+							<div class="delivery__descr-text">Менеджер уточняет все детали: состав заказа, объёмы, сроки</div>
+						</div>
+						<div class="delivery__descr">
+							<div class="delivery__descr-caption">Вы получаете счет</div>
+							<div class="delivery__descr-text">
+								<span>Высылаем счёт на почту после подтверждения позиций</span>
+								<p>*Только безналичный расчет</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="delivery__image"><img src="{% static 'img/icons/delivery_1.svg' %}" alt="Заказ и оплата товара"></div>
+			</div>
+			<div class="delivery__wrapper-inner">
+				<div class="delivery__image"><img src="{% static 'img/icons/delivery_2.svg' %}" alt="Работа по составу заказа"></div>
+				<div class="delivery__work">
+					<div class="delivery__title">Работа по составу заказа</div>
+					<div class="delivery__descr">
+						<div class="delivery__descr-caption">Сборка/перемещение</div>
+						<div class="delivery__descr-text">Комплектуем заказ по спецификации, проверяем количества</div>
+					</div>
+				</div>
+			</div>
+			<div class="delivery__wrapper-inner">
+				<div class="delivery__shipping">
+					<div class="delivery__title">Доставка</div>
+					<div class="delivery__descr">
+						<div class="delivery__descr-caption">Самовывоз со склада</div>
+						<div class="delivery__descr-text">Груз готовим к самовывозу; погрузка на ваш транспорт </div>
+					</div>
+					<div class="delivery__descr">
+						<div class="delivery__descr-caption">Транспортной компанией</div>
+						<div class="delivery__descr-text">Оформляем документы ТК, согласуем габариты и упаковку </div>
+					</div>
+				</div>
+				<div class="delivery__image"><img src="{% static 'img/icons/delivery_3.svg' %}" alt="Доставка"></div>
+			</div>
+		</div>
+	</div>
+</section>

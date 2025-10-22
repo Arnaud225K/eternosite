@@ -1,0 +1,76 @@
+{% load static %}
+{% load catalog_tags %}
+
+{# ===== Уровень 1 (корень) ===== #}
+<div class="menu-panel is-active" is="root" data-panel="root" aria-label="Меню" aria-hidden="false">
+	<div class="menu-panel__header">
+        <button class="menu-panel__close" type="button" data-menu-close aria-label="Закрыть">✕</button>
+    </div>
+	<ul class="menu-list">
+		<li><a class="menu-link" href="/">Главная</a></li>
+		
+        {# === АККОРДЕОН: КАТАЛОГ (dynamique) === #}
+		<li class="menu-accordion">
+			<button class="menu-link menu-accordion__toggle" type="button" data-acc-toggle aria-expanded="false" aria-controls="acc-catalog">
+                <span>Каталог</span>
+                <span class="menu-link__arrow parent-arrow"></span>
+            </button>
+			<ul class="menu-accordion__content" id="acc-catalog" role="region" aria-hidden="true" style="max-height: 0px;">
+				{% for category in top_level_categories %}
+                    <li class="has-children">
+                        <button class="menu-link" type="button" data-submenu="{{ category.slug }}" aria-haspopup="true" aria-controls="panel-{{ category.slug }}">
+                            {{ category.name }}
+                            <span class="menu-link__arrow child-arrow"></span>
+                        </button>
+                    </li>
+                {% empty %}
+                    <li><a class="menu-link" href="/catalog/">Перейти в каталог</a></li>
+                {% endfor %}
+			</ul>
+		</li>
+		
+		<li><a class="menu-link" href="/uslugi/">Услуги</a></li>
+		<li><a class="menu-link" href="/dostavka-i-oplata/">Доставка и оплата</a></li>
+		<li><a class="menu-link" href="/articles/">Статьи</a></li>
+		<li><a class="menu-link" href="/o-nas/">О компании</a></li>
+		<li><a class="menu-link" href="/contacts/">Контакты</a></li>
+		<li><a class="menu-link" href="{% url 'checkout:checkout_page' %}">Корзина</a></li>
+	</ul>
+	
+    <div class="menu-panel__footer">
+    {% if contact_email %}
+        <a href="mailto:{{ contact_email }}">
+            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.231 0H0.769475C0.565462 0 0.369805 0.0790178 0.225547 0.21967C0.0812878 0.360322 0.000244141 0.551088 0.000244141 0.75V13.5C0.000244141 13.8978 0.162332 14.2794 0.450849 14.5607C0.739367 14.842 1.13068 15 1.53871 15H18.4618C18.8698 15 19.2611 14.842 19.5496 14.5607C19.8382 14.2794 20.0002 13.8978 20.0002 13.5V0.75C20.0002 0.551088 19.9192 0.360322 19.7749 0.21967C19.6307 0.0790178 19.435 0 19.231 0ZM17.2531 1.5L10.0002 7.98281L2.74736 1.5H17.2531ZM18.4618 13.5H1.53871V2.45531L9.48005 9.55312C9.62197 9.68014 9.8076 9.75062 10.0002 9.75062C10.1929 9.75062 10.3785 9.68014 10.5204 9.55312L18.4618 2.45531V13.5Z"
+                    fill="#021549"></path>
+            </svg>
+            <span>{{ contact_email }}</span>
+        </a>
+    {% endif %}
+    {% if contact_phone %}
+        <a href="tel:{{ contact_phone|remove_space_href }}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.7196 10.2805C13.6499 10.2108 13.5946 10.1281 13.5568 10.0371C13.5191 9.94601 13.4997 9.84842 13.4997 9.74986C13.4997 9.6513 13.5191 9.5537 13.5568 9.46265C13.5946 9.3716 13.6499 9.28889 13.7196 9.21923L16.9399 5.99986H15.0003C14.8013 5.99986 14.6106 5.92084 14.4699 5.78019C14.3293 5.63954 14.2503 5.44877 14.2503 5.24986C14.2503 5.05095 14.3293 4.86018 14.4699 4.71953C14.6106 4.57888 14.8013 4.49986 15.0003 4.49986H18.7503C18.9492 4.49986 19.1399 4.57888 19.2806 4.71953C19.4212 4.86018 19.5003 5.05095 19.5003 5.24986V8.99986C19.5003 9.19877 19.4212 9.38954 19.2806 9.53019C19.1399 9.67084 18.9492 9.74986 18.7503 9.74986C18.5513 9.74986 18.3606 9.67084 18.2199 9.53019C18.0793 9.38954 18.0003 9.19877 18.0003 8.99986V7.06017L14.7809 10.2805C14.7112 10.3502 14.6285 10.4055 14.5375 10.4433C14.4464 10.481 14.3488 10.5004 14.2503 10.5004C14.1517 10.5004 14.0541 10.481 13.963 10.4433C13.872 10.4055 13.7893 10.3502 13.7196 10.2805ZM20.989 17.1636C20.8218 18.4339 20.198 19.6 19.2339 20.444C18.2699 21.288 17.0315 21.7522 15.7503 21.7499C8.3065 21.7499 2.25025 15.6936 2.25025 8.24986C2.24796 6.96857 2.71215 5.73025 3.55613 4.7662C4.40011 3.80214 5.56616 3.17827 6.8365 3.01111C7.15763 2.97181 7.48286 3.0374 7.76366 3.19807C8.04447 3.35875 8.26579 3.60591 8.39463 3.90267L10.3746 8.32392V8.33517C10.4731 8.56247 10.5138 8.81063 10.4931 9.05749C10.4723 9.30435 10.3907 9.54222 10.2556 9.74986C10.2387 9.77517 10.2209 9.79861 10.2021 9.82205L8.25025 12.1358C8.95244 13.5627 10.4449 15.042 11.8906 15.7461L14.1724 13.8045C14.1948 13.7857 14.2183 13.7682 14.2428 13.752C14.45 13.6131 14.6887 13.5283 14.9371 13.5054C15.1856 13.4825 15.4358 13.5221 15.6649 13.6208L15.6771 13.6264L20.0937 15.6055C20.3912 15.7337 20.6391 15.9548 20.8005 16.2356C20.9619 16.5165 21.028 16.842 20.989 17.1636ZM19.5003 16.9761H19.4899L15.0837 15.0017L12.8009 16.9442C12.7788 16.9631 12.7556 16.9806 12.7315 16.9967C12.5156 17.1407 12.2661 17.2263 12.0073 17.245C11.7485 17.2638 11.4893 17.215 11.2549 17.1036C9.499 16.2552 7.74869 14.518 6.89931 12.7808C6.78684 12.5482 6.73637 12.2904 6.7528 12.0325C6.76922 11.7747 6.85199 11.5254 6.99306 11.3089C7.00892 11.2835 7.02679 11.2593 7.0465 11.2367L9.00025 8.92017L7.0315 4.51392C7.03113 4.51018 7.03113 4.50641 7.0315 4.50267C6.12237 4.62126 5.28764 5.0672 4.68364 5.75697C4.07964 6.44673 3.7478 7.33302 3.75025 8.24986C3.75373 11.4314 5.01912 14.4816 7.26881 16.7313C9.51849 18.981 12.5687 20.2464 15.7503 20.2499C16.6665 20.253 17.5526 19.9223 18.2427 19.3196C18.9329 18.7169 19.3799 17.8835 19.5003 16.9752V16.9761Z"
+                    fill="#021549"></path>
+            </svg>
+            <span>{{ contact_phone }}</span>
+        </a>
+    {% endif %}
+    </div>
+</div>
+
+{# ===== Уровень 2: подменю "Сортовой прокат" #}
+{% for category in top_level_categories %}
+    <div class="menu-panel" data-panel="{{ category.slug }}" id="panel-{{ category.slug }}" aria-label="Каталог / {{ category.name }}" aria-hidden="true">
+        <div class="menu-panel__header">
+            <button class="menu-panel__back" type="button" data-menu-back aria-label="Назад">←</button>
+            <span class="menu-panel__title menu-panel__title-red">{{ category.name }}</span>
+            <button class="menu-panel__close" type="button" data-menu-close aria-label="Закрыть">✕</button>
+        </div>
+        <ul class="menu-list">             
+            {% for subcategory in category.children.all %}
+                <li><a class="menu-link" href="{{ subcategory.get_absolute_url }}">{{ subcategory.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endfor %}

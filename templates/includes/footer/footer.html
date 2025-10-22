@@ -25,7 +25,7 @@
 									fill="white"></path>
 							</svg>
 							<div>
-								<p class="accent">г. {{ current_filial.name|default:"Выбрать город" }}</p>
+								{% comment %} <p class="accent">г. {{ current_filial.name|default:"Выбрать город" }}</p> {% endcomment %}
 								{% if contact_address %}
 									<p>{{ contact_address }}</p>
 								{% endif %}

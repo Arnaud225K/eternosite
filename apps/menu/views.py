@@ -431,3 +431,43 @@ class ProductView(View):
         return render(request, self.template_name, context)
     
 
+
+
+
+
+class AjaxMegaMenuView(View):
+    """
+    Vue AJAX pour charger le contenu du méga-menu (desktop) et du menu mobile.
+    """
+    template_name_desktop = 'includes/partials/_mega_menu_desktop.html'
+    template_name_mobile = 'includes/partials/_mega_menu_mobile.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return HttpResponse("Invalid request", status=400)
+
+        # On peut optimiser avec du cache ici plus tard si nécessaire
+        
+        try:
+            # On suppose une catégorie racine 'catalog' qui contient les catégories principales du menu
+            catalog_root = MenuCatalog.objects.get(slug='catalog', level=0)
+            
+            # On pré-charge les enfants (niveau 1) ET les petits-enfants (niveau 2) pour la performance
+            top_level_categories = catalog_root.get_children().filter(is_hidden=False).prefetch_related(
+                'children' 
+            ).order_by('order_number')
+
+        except MenuCatalog.DoesNotExist:
+            top_level_categories = MenuCatalog.objects.none()
+
+        context = {'top_level_categories': top_level_categories}
+
+        # On rend les deux partiels
+        html_desktop = render_to_string(self.template_name_desktop, context, request=request)
+        html_mobile = render_to_string(self.template_name_mobile, context, request=request)
+
+        # On renvoie les deux dans la réponse JSON
+        return JsonResponse({
+            'html_desktop': html_desktop,
+            'html_mobile': html_mobile,
+        })

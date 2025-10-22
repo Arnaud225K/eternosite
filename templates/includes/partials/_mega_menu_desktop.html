@@ -1,0 +1,31 @@
+<div class="cat_menu__container">
+    <div class="cat_menu__caption">Каталог</div>
+    <div class="cat_menu__wrapper" data-tabs="catalog">
+        <div class="cat_menu__tabs">
+            {% for category in top_level_categories %}
+                <button class="tablink {% if forloop.first %}active{% endif %}" data-target="{{ category.slug }}">
+                    <div class="thumb">
+                        <svg width="73" height="70" viewBox="0 0 73 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 47L54.5 12L63.25 13.25M63.25 13.25L72 14.5M63.25 13.25L25 47M72 14.5L35.5 47M72 14.5V23.75M72 23.75V33L36 69M72 23.75L36 58M6.71575 13.554C3.30923 15.4234 1 19.044 1 23.204C1 29.2791 5.92487 34.204 12 34.204C15.2257 34.204 18.1271 32.8155 20.1392 30.6037M6.71575 13.554C8.28402 12.6934 10.0849 12.204 12 12.204C18.0751 12.204 23 17.1289 23 23.204C23 26.0534 21.9166 28.6498 20.1392 30.6037M6.71575 13.554C5.09565 14.835 4 15.704 4 15.704M6.71575 13.554C10.9894 10.1749 18.9123 3.92892 20 3.204C21.5 2.20426 21.804 2.23806 23 1.704C31.1424 -1.93178 40.8449 9.31105 36.5 17.204C35.7646 18.54 35.5 18.7043 34 20.204C32.5932 21.6105 21.5112 29.6143 20.1392 30.6037M20.1392 30.6037C20.0483 30.6692 20 30.704 20 30.704M21.2 62H28.8C28.9105 62 29 61.9105 29 61.8V54.2C29 54.0895 28.9105 54 28.8 54H21.2C21.0895 54 21 54.0895 21 54.2V61.8C21 61.9105 21.0895 62 21.2 62ZM14.2 69H35.8C35.9105 69 36 68.9105 36 68.8V47.2C36 47.0895 35.9105 47 35.8 47H14.2C14.0895 47 14 47.0895 14 47.2V68.8C14 68.9105 14.0895 69 14.2 69ZM5 23.204C5 19.338 8.13401 16.204 12 16.204C15.866 16.204 19 19.338 19 23.204C19 27.07 15.866 30.204 12 30.204C8.13401 30.204 5 27.07 5 23.204Z"
+                                stroke="#021549" stroke-width="2"></path>
+                        </svg>
+                    </div>
+                    <span>{{ category.name }}</span>
+                    <div class="arrow"></div>
+                </button>
+            {% endfor %}
+        </div>
+        <div class="cat_menu__content">
+            {% for category in top_level_categories %}
+                <div class="tabcontent {% if forloop.first %}active{% endif %}" id="{{ category.slug }}">
+                    <a class="tabcontent__caption" href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+                    <div class="tabcontent__links">
+                        {% for subcategory in category.get_children %}
+                            <a href="{{ subcategory.get_absolute_url }}">{{ subcategory.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

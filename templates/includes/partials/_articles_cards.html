@@ -1,0 +1,19 @@
+{% load static %}
+
+
+
+{% for article in articles %}
+    <div class="articles_main__card">
+        <div class="articles_main__card-image">
+            {% if article.category %}
+                <div class="articles_main__card-tag">{{ article.category.name }}</div>
+            {% endif %}
+            <a href="{{ article.get_absolute_url }}">
+                <img src="{% if article.image %}{{ article.image.url }}{% else %}{% static 'img/images/default_image.webp' %}{% endif %}" alt="{{ article.name }}">
+            </a>
+        </div>
+        <div class="articles_main__card-title">
+            <a href="{{ article.get_absolute_url }}">{{ article.name }}</a>
+        </div>
+    </div>
+{% endfor %}

@@ -1,0 +1,45 @@
+{% load static %}
+{% load catalog_tags %}
+
+
+
+<section class="articles" id="articles-section-container" data-api-url="{% url 'articles:filter_articles_ajax' %}">
+	<div class="container">
+		{% include 'includes/elements/breadcrumb.html' %}
+		
+        <h1>Статьи</h1>
+        
+        {% if categories %}
+            <div class="articles__tabs">
+                <a href="{% url 'articles:article_list' %}"
+                    class="articles__tabs-item {% if not active_category_slug %}active{% endif %}">
+                    Все статьи
+                </a>
+                {% for category in categories %}
+                    <a href="{% url 'articles:article_list_by_category' category.slug %}"
+                        class="articles__tabs-item {% if active_category_slug == category.slug %}active{% endif %}">
+                        {{ category.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if articles %}
+            <section class="articles__wrapper" id="articles-wrapper">
+                {% include 'includes/partials/_articles_cards.html' with articles=articles %}
+            </section>
+            
+            <div class="articles__showmore" id="articles-pagination">
+                {% include 'includes/partials/_articles_pagination.html' with page_obj=articles %}
+            </div>
+        {% else %}
+            <div class="articles__empty-message" style="text-align: center; padding: 40px 0;">
+                <p>По вашему запросу статьи не найдены.</p>
+                <p>Попробуйте выбрать другую категорию или проверьте позже.</p>
+                {% if active_category_slug %}
+                    <a href="{% url 'articles:article_list' %}" style="margin-top: 20px; display: inline-block;">Показать все статьи</a>
+                {% endif %}
+            </div>
+        {% endif %}
+	</div>
+</section>
