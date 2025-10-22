@@ -521,75 +521,168 @@
         });
     });
 
-    //MEGA MENU HEADER
-    document.addEventListener("DOMContentLoaded", () => {
-        
-        // --- LOGIQUE DE CHARGEMENT AJAX DU MENU ---
-        const desktopMenuContainer = document.querySelector('.cat_menu');
-        const mobileMenuContainer = document.querySelector('.aside-menu__track');
-        const catalogBtn = document.querySelector('.catalog__btn');
-        const mobileMenuTrigger = document.querySelector('[data-open-menu]');
-
-        async function loadMenuContent() {
-            // Ne charger qu'une seule fois
-            if (desktopMenuContainer.dataset.menuDesktopLoaded === 'true') return;
-            
-            desktopMenuContainer.classList.add('loading');
-
-            try {
-                const response = await fetch("/ajax/get-mega-menu/", { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                if (!response.ok) throw new Error("Failed to fetch menu");
-                const data = await response.json();
-
-                // Injecter le contenu HTML
-                desktopMenuContainer.innerHTML = data.html_desktop;
-                mobileMenuContainer.innerHTML = data.html_mobile;
-
-                desktopMenuContainer.dataset.menuDesktopLoaded = 'true';
-                
-                // Activer les onglets du menu desktop
-                initializeDesktopTabs();
-                
-            } catch (error) {
-                console.error("Error loading menu:", error);
-                desktopMenuContainer.innerHTML = '<div class="cat_menu__container"><p>Ошибка загрузки меню.</p></div>';
-            } finally {
-                desktopMenuContainer.classList.remove('loading');
+    // //MEGA MENU HEADER
+    function initializeMobileMenuUI() {
+        const mobileMenu = document.querySelector("[data-menu]");
+        if (!mobileMenu || mobileMenu.dataset.uiInitialized === "true") return;
+        const overlay = mobileMenu.querySelector("[data-menu-overlay]");
+        const openMenuButton = document.querySelector("[data-open-menu]");
+        const panels = [...mobileMenu.querySelectorAll(".menu-panel")];
+        const rootPanel = mobileMenu.querySelector('.menu-panel[is="root"]');
+        const panelStack = [];
+        const setActivePanel = (panel) => {
+            if (!panel) return;
+            panels.forEach((p) => {
+                const isActive = p === panel;
+                p.classList.toggle("is-active", isActive);
+                p.setAttribute("aria-hidden", String(!isActive));
+                if (!isActive && p.contains(document.activeElement)) {
+                    document.activeElement.blur();
+                }
+            });
+            setTimeout(() => {
+                const firstFocusable = panel.querySelector("a[href], button:not([disabled])");
+                if (firstFocusable) firstFocusable.focus();
+            }, 150);
+        };
+        const openMobileMenu = () => {
+            mobileMenu.classList.add("is-open");
+            mobileMenu.setAttribute("aria-hidden", "false");
+            document.body.classList.add("no-scroll");
+            setActivePanel(rootPanel);
+        };
+        const closeMobileMenu = () => {
+            mobileMenu.classList.remove("is-open");
+            mobileMenu.setAttribute("aria-hidden", "true");
+            document.body.classList.remove("no-scroll");
+            if (mobileMenu.contains(document.activeElement)) {
+                document.activeElement.blur();
             }
+            panelStack.length = 0;
+            if (openMenuButton) openMenuButton.focus();
+            mobileMenu.querySelectorAll(".menu-accordion.is-open").forEach((accordion) => {
+                accordion.classList.remove("is-open");
+                const toggle = accordion.querySelector("[data-acc-toggle]");
+                const content = accordion.querySelector(".menu-accordion__content");
+                if (toggle) toggle.setAttribute("aria-expanded", "false");
+                if (content) {
+                    content.setAttribute("aria-hidden", "true");
+                    content.style.maxHeight = "0px";
+                }
+            });
+        };
+        overlay.addEventListener("click", closeMobileMenu);
+        if (openMenuButton && !openMenuButton.dataset.listenerAttached) {
+            openMenuButton.addEventListener("click", openMobileMenu);
+            openMenuButton.dataset.listenerAttached = "true";
         }
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && mobileMenu.classList.contains("is-open")) closeMobileMenu();
+        });
+        mobileMenu.addEventListener("click", (e) => {
+            const target = e.target;
+            const accToggle = target.closest("[data-acc-toggle]");
+            if (accToggle) {
+                const accordion = accToggle.closest(".menu-accordion");
+                const content = accordion.querySelector(".menu-accordion__content");
+                const isOpen = accordion.classList.toggle("is-open");
+                accToggle.setAttribute("aria-expanded", String(isOpen));
+                content.setAttribute("aria-hidden", String(!isOpen));
+                content.style.maxHeight = isOpen ? `${content.scrollHeight}px` : "0px";
+                return;
+            }
+            if (target.closest("[data-menu-close]")) {
+                closeMobileMenu();
+                return;
+            }
+            if (target.closest("[data-menu-back]")) {
+                const lastTrigger = panelStack.pop();
+                setActivePanel(panelStack[panelStack.length - 1] || rootPanel);
+                if (lastTrigger) lastTrigger.focus();
+                return;
+            }
+            const submenuTrigger = target.closest("[data-submenu]");
+            if (submenuTrigger) {
+                const panelId = submenuTrigger.dataset.submenu;
+                const targetPanel = mobileMenu.querySelector(`.menu-panel[data-panel="${panelId}"]`);
+                if (targetPanel) {
+                    panelStack.push(submenuTrigger);
+                    setActivePanel(targetPanel);
+                }
+            }
+        });
+        mobileMenu.dataset.uiInitialized = "true";
+    }
 
-        // Déclencher le chargement au survol ou au clic
+    function initializeDesktopMenuUI() {
+        const desktopMenuContainer = document.querySelector(".cat_menu");
+        const catalogBtn = document.querySelector(".catalog__btn");
+        if (!desktopMenuContainer || !catalogBtn) return;
+        const menuWrapper = desktopMenuContainer.querySelector('[data-tabs="catalog"]');
+        if (!menuWrapper) return;
+        const tablinks = menuWrapper.querySelectorAll(".tablink");
+        const tabcontents = menuWrapper.querySelectorAll(".tabcontent");
+        tablinks.forEach((tab) => {
+            tab.addEventListener("mouseenter", function () {
+                tablinks.forEach((t) => t.classList.remove("active"));
+                tabcontents.forEach((t) => t.classList.remove("active"));
+                this.classList.add("active");
+                const targetId = this.getAttribute("data-target");
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) targetElement.classList.add("active");
+            });
+        });
+        const closeMenu = () => {
+            catalogBtn.classList.remove("opened");
+            desktopMenuContainer.classList.remove("opened");
+        };
+        catalogBtn.addEventListener("mouseenter", () => {
+            catalogBtn.classList.add("opened");
+            desktopMenuContainer.classList.add("opened");
+        });
+        desktopMenuContainer.addEventListener("mouseleave", closeMenu);
+        catalogBtn.addEventListener("mouseleave", (e) => {
+            if (!desktopMenuContainer.contains(e.relatedTarget)) closeMenu();
+        });
+    }
+
+    async function loadMenuContent() {
+        const desktopMenuContainer = document.querySelector(".cat_menu");
+        const mobileMenuTrack = document.querySelector(".aside-menu__track");
+        if (!desktopMenuContainer || desktopMenuContainer.dataset.menuLoaded === "true") return;
+        desktopMenuContainer.classList.add("loading");
+        try {
+            const response = await fetch("/ajax/get-mega-menu/", { headers: { "X-Requested-With": "XMLHttpRequest" } });
+            if (!response.ok) throw new Error("Failed to fetch menu");
+            const data = await response.json();
+            if (data.html_desktop) desktopMenuContainer.innerHTML = data.html_desktop;
+            if (data.html_mobile) mobileMenuTrack.innerHTML = data.html_mobile;
+            desktopMenuContainer.dataset.menuLoaded = "true";
+            initializeDesktopMenuUI();
+            initializeMobileMenuUI();
+        } catch (error) {
+            console.error("Error loading menu:", error);
+        } finally {
+            desktopMenuContainer.classList.remove("loading");
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const catalogBtn = document.querySelector(".catalog__btn");
+        const mobileMenuTrigger = document.querySelector("[data-open-menu]");
         if (catalogBtn) {
-            catalogBtn.addEventListener('mouseenter', loadMenuContent);
+            catalogBtn.addEventListener("mouseenter", loadMenuContent, { once: true });
         }
         if (mobileMenuTrigger) {
-            mobileMenuTrigger.addEventListener('click', loadMenuContent);
-        }
-
-        // --- VOTRE LOGIQUE D'UI EXISTANTE ---
-
-        // Logique pour les onglets du menu desktop
-        function initializeDesktopTabs() {
-            const menuWrapper = document.querySelector('[data-tabs="catalog"]');
-            if (!menuWrapper) return;
-            
-            const tablinks = menuWrapper.querySelectorAll('.tablink');
-            const tabcontents = menuWrapper.querySelectorAll('.tabcontent');
-
-            tablinks.forEach(tab => {
-                tab.addEventListener('mouseenter', function() {
-                    tablinks.forEach(t => t.classList.remove('active'));
-                    tabcontents.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    const targetId = this.getAttribute('data-target');
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                        targetElement.classList.add('active');
-                    }
-                });
+            mobileMenuTrigger.addEventListener("click", loadMenuContent, { once: true });
+            mobileMenuTrigger.addEventListener("click", () => {
+                const mobileMenu = document.querySelector("[data-menu]");
+                if (mobileMenu && mobileMenu.dataset.uiInitialized === "true") {
+                    mobileMenu.classList.add("is-open");
+                    document.body.classList.add("no-scroll");
+                }
             });
         }
     });
-
 
 })();

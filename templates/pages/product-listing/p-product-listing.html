@@ -19,9 +19,11 @@
 
 		<div class="subcategory__wrapper">
 			<!-- FILTERS-->
+			{% if available_filters %}
 			<section class="filters" id="filters-container">
 				{% include 'includes/partials/_filters_partial.html' %}
 			</section>
+			{% endif %}
 			<div id="active-filters-container">
             	{% include 'includes/partials/_active_filters.html' %}
         	</div>

@@ -1016,7 +1016,7 @@ h1 {
     cursor: pointer;
     text-decoration: underline;
 }
-.breadcrumps {
+/* .breadcrumps {
     display: flex;
     gap: 9px;
     padding-top: 20px;
@@ -1049,6 +1049,133 @@ h1 {
 }
 .breadcrumps li:last-child::after {
     content: none;
+} */
+
+.breadcrumps {
+    display: flex;
+    gap: 9px;
+    padding-top: 20px;
+    flex-wrap: nowrap; /* Changé de wrap à nowrap */
+    overflow-x: auto; /* Scroll horizontal */
+    overflow-y: hidden;
+    padding-bottom: 10px; /* Espace pour la scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #850003 #f1f1f1;
+    -webkit-overflow-scrolling: touch; /* Scroll fluide sur iOS */
+}
+
+/* Style de la scrollbar pour Webkit */
+.breadcrumps::-webkit-scrollbar {
+    height: 4px;
+}
+
+.breadcrumps::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.breadcrumps::-webkit-scrollbar-thumb {
+    background: #850003;
+    border-radius: 2px;
+}
+
+.breadcrumps::-webkit-scrollbar-thumb:hover {
+    background: #a80f12;
+}
+
+.breadcrumps li {
+    display: block;
+    padding-right: 8px;
+    position: relative;
+    font-size: 14px;
+    white-space: nowrap; /* Empêche le texte de se casser */
+    flex-shrink: 0; /* Empêche les items de rétrécir */
+}
+
+.breadcrumps li a {
+    color: #8b8b91;
+    text-decoration: none;
+}
+
+.breadcrumps li span {
+    font-weight: 700;
+}
+
+.breadcrumps li::after {
+    content: "•";
+    position: absolute;
+    display: block;
+    right: -4px;
+    top: 1px;
+    color: #850003;
+    font-weight: 900;
+}
+
+.breadcrumps li:last-child {
+    font-weight: 900;
+}
+
+.breadcrumps li:last-child::after {
+    content: none;
+}
+
+/* Container optionnel pour mieux contrôler l'espacement */
+.container-breadcrumbs {
+    width: 100%;
+    overflow: hidden; /* Cache le débordement horizontal */
+}
+
+/* Comportement normal sur desktop */
+@media screen and (min-width: 769px) {
+    .breadcrumps {
+        flex-wrap: wrap; /* Retour à la ligne sur desktop */
+        overflow-x: visible; /* Pas de scroll sur desktop */
+        padding-bottom: 20px; /* Retour au padding normal */
+    }
+    
+    .breadcrumps::-webkit-scrollbar {
+        display: none; /* Cache la scrollbar sur desktop */
+    }
+    
+    .breadcrumps {
+        scrollbar-width: none; /* Cache la scrollbar sur Firefox desktop */
+    }
+}
+
+/* Optimisation mobile */
+@media screen and (max-width: 768px) {
+    .breadcrumps {
+        gap: 8px;
+        padding-top: 15px;
+    }
+    
+    .breadcrumps li {
+        font-size: 13px;
+        padding-right: 6px;
+    }
+    
+    .breadcrumps li::after {
+        right: -3px;
+        top: 0;
+        font-size: 12px;
+    }
+}
+
+/* Pour les très petits écrans */
+@media screen and (max-width: 480px) {
+    .breadcrumps {
+        gap: 6px;
+    }
+    
+    .breadcrumps li {
+        font-size: 12px;
+        padding-right: 5px;
+    }
+    
+    .breadcrumps li::after {
+        right: -2px;
+        font-size: 11px;
+    }
 }
 
 .text-table-wrapper {

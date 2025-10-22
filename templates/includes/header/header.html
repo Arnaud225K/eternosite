@@ -57,7 +57,7 @@
                 <img src="{% static 'img/logo/logo_white.webp' %}" alt="Логотип">
             {% endif %}
         </a>
-        <nav class="header__navigation">
+        <nav class="header__navigation {% if not is_index %} mobile__nav-white {% endif %}">
         <div class="mobile__nav" data-open-menu>
             <div class="icon"> <span class="line"></span><span class="line"></span><span class="line"></span></div>
             <div class="text">Меню</div>
