@@ -61,7 +61,7 @@
 						</div>
 						{% endif %}
 					</div>
-					<div class="footer__catalog">
+					{% comment %} <div class="footer__catalog">
 						<a class="footer__subtitle" href="/catalog/">Каталог</a>
 						<ul>
 							<li> <a href="#">Сортовой прокат</a></li>
@@ -78,7 +78,29 @@
 							<li> <a href="#">Пайка металла</a></li>
 							<li> <a href="#">Покраска металла</a></li>
 						</ul>
-					</div>
+					</div> {% endcomment %}
+    
+						{% if footer_catalog_links %}
+							<div class="footer__catalog">
+								<a class="footer__subtitle" href="/catalog/">Каталог</a>
+								<ul>
+									{% for item in footer_catalog_links %}
+										<li><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></li>
+									{% endfor %}
+								</ul>
+							</div>
+						{% endif %}
+
+						{% if footer_service_links %}
+							<div class="footer__services">
+								<a class="footer__subtitle" href="/uslugi/">Услуги</a>
+								<ul>
+									{% for service in footer_service_links %}
+										<li><a href="{{ service.get_absolute_url }}">{{ service.title }}</a></li>
+									{% endfor %}
+								</ul>
+							</div>
+						{% endif %}
 					<div class="footer__clients">
 						<a class="footer__subtitle" href="/dostavka-i-oplata/">Доставка и оплата</a><a
 							class="footer__subtitle" href="/o-nas/">О компании</a>

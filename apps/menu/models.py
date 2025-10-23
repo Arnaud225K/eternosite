@@ -56,7 +56,7 @@ class MenuCatalog(MPTTModel):
     is_hidden = models.BooleanField("Скрыть", default=False, db_index=True)
     is_show_main = models.BooleanField(verbose_name="Отображать на главной", default=False)
     show_footer_left = models.BooleanField(verbose_name="Показывать в подвале (левый столбец)", default=False, help_text="Отметьте, чтобы этот пункт появился в подвале (левый столбец) сайта.")
-    show_footer_rigth = models.BooleanField(verbose_name="Показывать в подвале (правый столбец)", default=False, help_text="Отметьте, чтобы этот пункт появился в подвале (правый столбец) сайта.")
+    show_footer_right = models.BooleanField(verbose_name="Показывать в подвале (правый столбец)", default=False, help_text="Отметьте, чтобы этот пункт появился в подвале (правый столбец) сайта.")
     is_show_in_header = models.BooleanField("Показывать в верхнем меню",default=False, help_text="Отметьте, чтобы этот пункт появился в выпадающем меню в шапке сайта.")
     show_descendants_products = models.BooleanField(
         "Показывать товары из подкатегорий",

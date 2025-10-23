@@ -35,7 +35,7 @@ from apps.utils.utils import (
 )
 # from apps.products.views import RecentlyViewed
 # from apps.offers.models import OfferCollection
-# from apps.reviews.models import Review
+from apps.reviews.models import Review
 from apps.articles.models import Articles
 from apps.project_settings.models import ProjectSettings
 
@@ -111,6 +111,8 @@ class IndexView(TemplateView):
             'category'
         ).order_by('order_number', '-date')[:SIZE_ARTICLE_LIST]
 
+        # 4. REVIEWS
+        main_reviews = Review.objects.filter(is_hidden=False).order_by('order_number')[:SIZE_REVIEWS_LIST]
 
         context = {
             'is_index' : is_index,
@@ -118,6 +120,7 @@ class IndexView(TemplateView):
             'current_filial' : request.filial,
             'main_services': main_services,
             'main_articles':main_articles,
+            'main_reviews':main_reviews,
         }
 
         return render(request, self.template_name, context)

@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from apps.project_settings.models import ProjectSettings, SocialLink
 
 from apps.filial.models import Filial
-# from apps.offers.models import OfferCollection
+from apps.products.models import Product
 # from filials.views import get_current_filial
 
 from apps.menu.models import MenuCatalog
@@ -23,7 +23,7 @@ from django.utils import timezone
 
 MAX_ITEM_IN_FILE = 20000
 
-MAX_HEADER_MENU_ITEMS = 6
+MAX_ITEMS = 5
 
 PRODUCT_CATEGORY_TYPE_IDS = [6, 7, 8]
 
@@ -46,25 +46,6 @@ def global_views(request):
         ).first()
         
         cache.set(cache_key_settings, project_settings, 86400)
-    
-    
-    # cache_version_key = 'footer_menu_version'
-    # version = cache.get(cache_version_key, 1)
-    # cache_key_menu = f'footer_menu_items:v{version}'
-    
-    # footer_menu_items_list = cache.get(cache_key_menu)
-    
-    # if footer_menu_items_list is None:
-    #     PRODUCT_CATEGORY_TYPE_IDS = getattr(settings, 'PRODUCT_CATEGORY_TYPE_IDS', [])
-    #     MAX_HEADER_MENU_ITEMS = getattr(settings, 'MAX_HEADER_MENU_ITEMS', 10)
-        
-    #     footer_menu_items_list = list(MenuCatalog.objects.filter(
-    #         show_footer_rigth=True,
-    #         is_hidden=False,
-    #         type_menu_id__in=PRODUCT_CATEGORY_TYPE_IDS
-    #     ).only('name', 'slug').order_by('order_number')[:MAX_HEADER_MENU_ITEMS])
-        
-    #     cache.set(cache_key_menu, footer_menu_items_list, 86400) # 1 Day
 
     
     current_filial = request.filial
@@ -92,12 +73,18 @@ def global_views(request):
         contact_working_hours = current_filial.working_hours or contact_working_hours
 
 
-    footer_menu_items_list = MenuCatalog.objects.filter(
-        show_footer_rigth=True,
+    footer_catalog_links = MenuCatalog.objects.filter(
+        show_footer_left=True, 
         is_hidden=False,
-        type_menu_id__in=PRODUCT_CATEGORY_TYPE_IDS).only(
-        'id', 'name', 'slug', 'order_number'
-    ).order_by('order_number')[:MAX_HEADER_MENU_ITEMS] 
+        type_menu_id__in=PRODUCT_CATEGORY_TYPE_IDS
+    ).only(
+        'id', 'name', 'slug', 'parent_id', 'tree_id', 'lft', 'rght', 'level'
+    ).order_by('order_number')[:MAX_ITEMS]
+
+    footer_service_links = Product.services.filter(is_hidden=False
+    ).only(
+        'id', 'title', 'slug', 'product_type'
+    ).order_by('order_number')[:MAX_ITEMS]
 
     current_year = datetime.date.today().year
     site_name_from_db = project_settings.site_name if project_settings else settings.SITE_NAME
@@ -125,7 +112,8 @@ def global_views(request):
         'static_url': static_url,
         'form_render_timestamp_value': current_timestamp_for_form,
         'current_filial': current_filial,
-        'footer_menu_items_list': footer_menu_items_list,
+        'footer_catalog_links': footer_catalog_links,
+        'footer_service_links':  footer_service_links,   
         'contact_phone': contact_phone,
         'contact_email': contact_email,
         'contact_address': contact_address,
