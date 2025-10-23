@@ -84,6 +84,5 @@ class Filial(models.Model):
         return self.name
 
     class Meta:
-        # ordering = ["order_number"]
         verbose_name = "Филиал"
         verbose_name_plural = "Филиалы (Города)"

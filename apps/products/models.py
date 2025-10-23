@@ -102,6 +102,7 @@ class Product(models.Model):
     filters = models.ManyToManyField(FilterValue, verbose_name="Значения фильтров", related_name="products", blank=True)
     is_hidden = models.BooleanField("Скрыть", default=False, db_index=True, help_text="Скрыть товар со всего сайта.")
     is_hit = models.BooleanField("Хит продаж", default=False, db_index=True, help_text="Показывать в блоке 'Хиты' на главной.")
+    is_show_main = models.BooleanField("Показывать на главной", default=False, db_index=True)
     created_at = models.DateTimeField("Создано", auto_now_add=True, editable=False)
     updated_at = models.DateTimeField("Обновлено", auto_now=True, editable=False)
     order_number = models.PositiveIntegerField("Порядок", default=100)

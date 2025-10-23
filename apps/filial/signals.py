@@ -8,9 +8,17 @@ def invalidate_filial_cache(sender, instance, **kwargs):
     """
     Supprime du cache la filiale qui vient d'être modifiée ou supprimée.
     """
-    cache_key_subdomain = f"filial_subdomain_{instance.subdomain}"
-    cache.delete(cache_key_subdomain)
+    # cache_key_subdomain = f"filial_subdomain_{instance.subdomain}"
+    # cache.delete(cache_key_subdomain)
+
+    # if instance.is_default:
+    #     cache_key_default = "filial_default"
+    #     cache.delete(cache_key_default)
+
+    if instance.subdomain:
+        cache.delete(f"filial_subdomain_{instance.subdomain}")
 
     if instance.is_default:
-        cache_key_default = "filial_default"
-        cache.delete(cache_key_default)
+        cache.delete("filial_default")
+    
+    cache.delete('all_active_filials_list')

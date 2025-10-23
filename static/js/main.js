@@ -51,30 +51,57 @@
         
         // --- RECHERCHE DANS LA MODALE DES VILLES ---
         const citySearchInput = document.getElementById("citySearch");
-        const cityClearBtn = document.getElementById("cityClear");
-        const cityList = document.getElementById("cityList");
-        if (citySearchInput && cityList) {
-            const cityLinks = Array.from(cityList.querySelectorAll("a[data-city]"));
-            function normalizeText(text) {
-                return (text || "").toLowerCase().replace(/ё/g, "е").normalize("NFD").replace(/\p{Diacritic}/gu, "").trim();
-            }
-            function filterCities() {
-                const query = normalizeText(citySearchInput.value);
-                if (cityClearBtn) cityClearBtn.style.visibility = query ? "visible" : "hidden";
-                cityLinks.forEach(link => {
-                    const cityName = normalizeText(link.dataset.city || link.textContent);
-                    link.style.display = cityName.includes(query) ? "" : "none";
+        if (citySearchInput) {
+            const cityModal = citySearchInput.closest(".modal_city");
+            const cityList = document.getElementById("cityList");
+            const cityHeading = cityModal.querySelector(".city__heading");
+            const cityClearBtn = document.getElementById("cityClear");
+            const noResultsMessage = cityModal.querySelector(".city__no-results");
+
+            if (cityList && noResultsMessage) {
+                const allCityLinks = Array.from(cityList.querySelectorAll("a[data-city], span[data-city]"));
+                let searchTimeout;
+
+                function normalizeText(text) {
+                    return (text || "")
+                        .toLowerCase()
+                        .replace(/ё/g, "е")
+                        .normalize("NFD")
+                        .replace(/\p{Diacritic}/gu, "")
+                        .trim();
+                }
+
+                function filterCities() {
+                    const query = normalizeText(citySearchInput.value);
+
+                    if (cityClearBtn) cityClearBtn.style.visibility = query ? "visible" : "hidden";
+
+                    let foundResults = false;
+                    allCityLinks.forEach((link) => {
+                        const cityName = normalizeText(link.dataset.city || link.textContent);
+                        const isVisible = !query || cityName.includes(query);
+                        link.style.display = isVisible ? "" : "none";
+                        if (isVisible) foundResults = true;
+                    });
+
+                    noResultsMessage.style.display = foundResults || !query ? "none" : "block";
+                }
+
+                citySearchInput.addEventListener("input", () => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(filterCities, 250);
                 });
+
+                if (cityClearBtn) {
+                    cityClearBtn.addEventListener("click", () => {
+                        citySearchInput.value = "";
+                        citySearchInput.focus();
+                        filterCities();
+                    });
+                }
+
+                if (cityClearBtn) cityClearBtn.style.visibility = "hidden";
             }
-            citySearchInput.addEventListener("input", filterCities);
-            if (cityClearBtn) {
-                cityClearBtn.addEventListener("click", () => {
-                    citySearchInput.value = "";
-                    citySearchInput.focus();
-                    filterCities();
-                });
-            }
-            filterCities();
         }
 
         // --- GESTION DU CONSENTEMENT POUR ACTIVER LES BOUTONS SUBMIT ---
@@ -106,153 +133,6 @@
                 if (!catMenu.contains(e.relatedTarget)) closeMenu();
             });
         }
-        
-        // // // --- LOGIQUE D'UI POUR LE MENU MOBILE COULISSANT ---
-        // const mobileMenu = document.querySelector("[data-menu]");
-        // if(mobileMenu) {
-        //     const overlay = mobileMenu.querySelector("[data-menu-overlay]");
-        //     const panels = [...mobileMenu.querySelectorAll(".menu-panel")];
-        //     const rootPanel = mobileMenu.querySelector('.menu-panel[is="root"]');
-        //     const panelStack = [];
-
-        //     const setActivePanel = (panel) => {
-        //         panels.forEach(p => {
-        //             const isActive = p === panel;
-        //             p.classList.toggle("is-active", isActive);
-        //             p.setAttribute("aria-hidden", !isActive);
-        //         });
-        //     };
-
-        //     const openMobileMenu = () => {
-        //         mobileMenu.classList.add("is-open");
-        //         document.body.classList.add("no-scroll");
-        //         setActivePanel(rootPanel);
-        //     };
-        //     const closeMobileMenu = () => {
-        //         mobileMenu.classList.remove("is-open");
-        //         document.body.classList.remove("no-scroll");
-        //         panelStack.length = 0; // Vider l'historique de navigation
-        //         setActivePanel(rootPanel); // Revenir au panneau racine
-
-        //         // Réinitialiser tous les accordéons à l'état fermé
-        //         mobileMenu.querySelectorAll('.menu-accordion.is-open').forEach(accordion => {
-        //             accordion.classList.remove('is-open');
-        //             const toggle = accordion.querySelector('[data-acc-toggle]');
-        //             const content = accordion.querySelector('.menu-accordion__content');
-        //             if (toggle) toggle.setAttribute('aria-expanded', 'false');
-        //             if (content) {
-        //                 content.setAttribute('aria-hidden', 'true');
-        //                 content.style.maxHeight = '0px';
-        //             }
-        //         });
-        //     };
-
-
-        //     overlay.addEventListener("click", closeMobileMenu);
-            
-        //     mobileMenu.addEventListener("click", (e) => {
-        //         const mobileMenu = document.querySelector("[data-menu]");
-        //         if (mobileMenu) {
-        //             const overlay = mobileMenu.querySelector("[data-menu-overlay]");
-        //             const panels = [...mobileMenu.querySelectorAll(".menu-panel")];
-        //             const rootPanel = mobileMenu.querySelector('.menu-panel[is="root"]');
-        //             const panelStack = []; // Pour garder en mémoire le chemin de navigation
-
-        //             // Fonction pour afficher le bon panneau
-        //             const setActivePanel = (panel) => {
-        //                 if (!panel) return;
-        //                 panels.forEach(p => {
-        //                     const isActive = p === panel;
-        //                     p.classList.toggle("is-active", isActive);
-        //                     p.setAttribute("aria-hidden", String(!isActive));
-        //                 });
-        //             };
-
-        //             // Fonction pour ouvrir le menu
-        //             const openMobileMenu = () => {
-        //                 mobileMenu.classList.add("is-open");
-        //                 document.body.classList.add("no-scroll");
-        //                 setActivePanel(rootPanel);
-        //             };
-
-        //             // Fonction pour fermer complètement le menu
-        //             const closeMobileMenu = () => {
-        //                 mobileMenu.classList.remove("is-open");
-        //                 document.body.classList.remove("no-scroll");
-        //                 panelStack.length = 0; // Vider l'historique de navigation
-        //                 setActivePanel(rootPanel); // Revenir au panneau racine pour la prochaine ouverture
-        //             };
-
-        //             // Écouteurs pour ouvrir/fermer
-        //             overlay.addEventListener("click", closeMobileMenu);
-        //             document.querySelectorAll("[data-open-menu]").forEach(btn => btn.addEventListener("click", openMobileMenu));
-        //             document.addEventListener("keydown", (e) => {
-        //                 if (e.key === "Escape" && mobileMenu.classList.contains("is-open")) {
-        //                     closeMobileMenu();
-        //                 }
-        //             });
-
-        //             // Écouteur principal pour toutes les actions à l'intérieur du menu
-        //             mobileMenu.addEventListener("click", (e) => {
-        //                 const target = e.target;
-
-        //                 // Clic sur un bouton d'accordéon (ex: "Каталог")
-        //                 const accToggle = target.closest("[data-acc-toggle]");
-        //                 if (accToggle) {
-        //                     const accordion = accToggle.closest(".menu-accordion");
-        //                     const content = accordion.querySelector(".menu-accordion__content");
-        //                     const isOpen = accordion.classList.toggle("is-open");
-                            
-        //                     accToggle.setAttribute("aria-expanded", String(isOpen));
-        //                     content.setAttribute("aria-hidden", String(!isOpen));
-                            
-        //                     const maxHeight = Math.min(content.scrollHeight, Math.floor(0.56 * window.innerHeight), 520);
-        //                     content.style.maxHeight = isOpen ? `${maxHeight}px` : "0px";
-        //                     return;
-        //                 }
-
-        //                 // Clic sur le bouton de fermeture principal
-        //                 if (target.closest("[data-menu-close]")) {
-        //                     closeMobileMenu();
-        //                     return;
-        //                 }
-
-        //                 // Clic sur le bouton "Retour"
-        //                 if (target.closest("[data-menu-back]")) {
-        //                     if (panelStack.length === 0) {
-        //                         setActivePanel(rootPanel);
-        //                     } else {
-        //                         panelStack.pop();
-        //                         setActivePanel(panelStack[panelStack.length - 1] || rootPanel);
-        //                     }
-        //                     return;
-        //                 }
-
-        //                 // Clic pour ouvrir un sous-menu
-        //                 const submenuTrigger = target.closest("[data-submenu]");
-        //                 if (submenuTrigger) {
-        //                     const panelId = submenuTrigger.dataset.submenu;
-        //                     const targetPanel = mobileMenu.querySelector(`.menu-panel[data-panel="${panelId}"]`);
-        //                     if (targetPanel) {
-        //                         panelStack.push(targetPanel);
-        //                         setActivePanel(targetPanel);
-        //                     }
-        //                 }
-        //             });
-        //         }
-        //     });
-
-        //     document.querySelectorAll("[data-open-menu]").forEach(btn => {
-        //         btn.addEventListener("click", openMobileMenu);
-        //     });
-        //     document.addEventListener("keydown", (e) => {
-        //         if (e.key === "Escape" && mobileMenu.classList.contains("is-open")) {
-        //             closeMobileMenu();
-        //         }
-        //     });
-        // }
-
-        
 
         // --- GESTION DES ONGLETS (TABS) ---
         const tabLinks = document.querySelectorAll(".tablink");

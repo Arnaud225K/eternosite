@@ -136,25 +136,33 @@ def global_views(request):
     return context
 
 
+# def filial_context(request):
+#     """
+#     Prépare et précharge les données des filiales pour une utilisation
+#     performante dans les templates.
+#     """
+#     all_filials = Filial.objects.filter(is_hidden=False)
+#     return {
+#         'all_filials': all_filials,
+#         'current_filial': request.filial,
+#     }
+
 def filial_context(request):
     """
-    Prépare et précharge les données des filiales pour une utilisation
-    performante dans les templates.
+    Rend la filiale actuelle et la liste de toutes les filiales actives
+    disponibles dans tous les templates, en utilisant le cache pour la performance.
     """
-    # On charge toutes les filiales et on précharge les relations nécessaires pour la logique de cascade des offres speciales.
-    all_filials = Filial.objects.filter(is_hidden=False)
-    # all_filials = Filial.objects.filter(is_hidden=False).select_related(
-    #     'homepage_offer_collection',
-    #     'parent__homepage_offer_collection',
-    #     'parent__parent__homepage_offer_collection'
-    # )
+    cache_key = 'all_active_filials_list'
     
-    # default_collection_list = OfferCollection.objects.filter(is_default_collection=True, is_hidden=False).first()
-
+    all_filials = cache.get(cache_key)
+    
+    if all_filials is None:
+        all_filials = list(Filial.objects.filter(is_hidden=False))
+        cache.set(cache_key, all_filials, 3600)
+    
     return {
         'all_filials': all_filials,
-        # 'default_offer_collection': default_collection_list,
-        'current_filial': request.filial,
+        'current_filial': getattr(request, 'filial', None),
     }
 
 

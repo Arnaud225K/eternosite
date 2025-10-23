@@ -36,7 +36,7 @@ from apps.utils.utils import (
 # from apps.products.views import RecentlyViewed
 # from apps.offers.models import OfferCollection
 # from apps.reviews.models import Review
-# from apps.articles.models import Articles
+from apps.articles.models import Articles
 from apps.project_settings.models import ProjectSettings
 
 
@@ -64,12 +64,13 @@ PRODUCT_AUTOTEXT = 'product_autotext'
 
 SIZE_SALE_INDEX = 20
 PRODUCTS_PER_PAGE = 2
-SIZE_OFFERS_INDEX = 6
-SIZE_SPEC_OFFERS = 10
+# SIZE_OFFERS_INDEX = 6
+# SIZE_SPEC_OFFERS = 10
 SIZE_REVIEWS_LIST = 10
-SIZE_ARTICLE_LIST = 4
+SIZE_ARTICLE_LIST = 3
 PRODUCT_CATEGORY_TYPE_IDS = [6, 7, 8]
 SIZE_POP_CATEG_INDEX = 7
+SIZE_SERVICE_INDEX = 4
 
 
 
@@ -85,13 +86,38 @@ class IndexView(TemplateView):
         is_index = True
         current_filial = request.filial
         
-        # 1. Popular categories
-        popular_categories = MenuCatalog.objects.filter(type_menu_id__in=PRODUCT_CATEGORY_TYPE_IDS, is_hidden=False, is_show_main=True).order_by('order_number')[:SIZE_POP_CATEG_INDEX]
+        # 1. POPULAR CATEGORIE
+        children_queryset = MenuCatalog.objects.filter(is_hidden=False).order_by('order_number')
+        popular_categories = MenuCatalog.objects.filter(
+            is_hidden=False, 
+            is_show_main=True
+        ).prefetch_related(
+            Prefetch('children', queryset=children_queryset, to_attr='prefetched_children')
+        ).order_by('order_number')[:SIZE_POP_CATEG_INDEX]
+
+        # 2. USLUGI
+        main_services = Product.services.filter(
+            is_hidden=False,
+            is_show_main=True
+        ).prefetch_related(
+            'images__gallery_image'
+        ).order_by('order_number')[:SIZE_SERVICE_INDEX]
+
+        # 3. ARTICLES
+        main_articles = Articles.objects.filter(
+            is_hidden=False,
+            is_show_main=True
+        ).select_related(
+            'category'
+        ).order_by('order_number', '-date')[:SIZE_ARTICLE_LIST]
 
 
         context = {
             'is_index' : is_index,
-            'popular_categories':popular_categories,
+            'popular_categories': popular_categories,
+            'current_filial' : request.filial,
+            'main_services': main_services,
+            'main_articles':main_articles,
         }
 
         return render(request, self.template_name, context)

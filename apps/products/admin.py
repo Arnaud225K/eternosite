@@ -88,6 +88,7 @@ class ProductAdmin(admin.ModelAdmin):
                 'category', 
                 'is_hidden', 
                 'is_hit',
+                'is_show_main',
                 )
         }),
         ('Контент и Цены', {

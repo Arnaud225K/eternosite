@@ -49,6 +49,7 @@ class MenuCatalog(MPTTModel):
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name="Родительский пункт")
     type_menu = models.ForeignKey(TypeMenu, verbose_name="Тип меню", on_delete=models.PROTECT, related_name="catalogs")
     image = models.ImageField("Картинка", upload_to='uploads/catalog/', blank=True, null=True)
+    hover_image = models.ImageField("Изображение при наведении на главном", upload_to='uploads/cataloghover/', blank=True, null=True)
     description = CKEditor5Field(config_name="extends", verbose_name="Описание", blank=True, null=True)
     applicable_filters = models.ManyToManyField("products.FilterCategory",verbose_name="Применимые категории фильтров", blank=True, help_text="Выберите, какие группы фильтров будут отображаться для товаров в этой категории.")
     order_number = models.PositiveIntegerField("Порядок", default=100)
