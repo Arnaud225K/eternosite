@@ -1,0 +1,14 @@
+{% load static %}
+
+
+<a class="category__item" href="{{ subcat.get_absolute_url }}">
+    {% comment %} {% if subcat.image %}
+        <img src="{{ subcat.image.url }}" alt="{{ subcat.name }}">
+    {% else %}
+        <img src="{% static 'img/images/default_image.webp' %}" alt="Default product image">
+    {% endif %} {% endcomment %}
+    <div class="category__overlay"> </div>
+    <div class="category__title">
+        <p>{{ subcat.name }}</p>
+    </div>
+</a>

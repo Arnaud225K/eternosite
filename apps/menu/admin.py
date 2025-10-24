@@ -51,7 +51,7 @@ class MenuCatalogAdmin(DraggableMPTTAdmin):
             'fields': ('name', 'slug', 'parent', 'type_menu', 'order_number')
         }),
         ('Отображение', {
-            'fields': ('is_hidden', 'is_show_main', 'is_show_in_header', 'show_footer_left', 'show_footer_rigth')
+            'fields': ('is_hidden', 'is_show_main', 'is_show_in_header', 'show_footer_left', 'show_footer_right')
         }),
         ('Контент', {
             'fields': ('image', 'hover_image', 'description')

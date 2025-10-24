@@ -20,7 +20,7 @@ from collections import defaultdict
 import urllib.parse
 from django.template.loader import render_to_string
 from unidecode import unidecode 
-# from apps.static_text.views import get_static_text
+from apps.static_text.views import get_static_text
 # from apps.checkout.cart import CartManager
 from django.middleware.csrf import get_token
 from apps.utils.utils import (
@@ -60,6 +60,8 @@ PRODUCT_META_TITLE_PAGE = 'product_meta_title_page'
 PRODUCT_META_DESCRIPTION = 'product_meta_description'
 PRODUCT_META_KEYWORDS = 'product_meta_keywords'
 PRODUCT_AUTOTEXT = 'product_autotext'
+COVER_TEXT_RIGHT = 'cover_text_right'
+COVER_TEXT_LEFT = 'cover_text_left'
 
 
 SIZE_SALE_INDEX = 20
@@ -114,13 +116,57 @@ class IndexView(TemplateView):
         # 4. REVIEWS
         main_reviews = Review.objects.filter(is_hidden=False).order_by('order_number')[:SIZE_REVIEWS_LIST]
 
+
+        # 5. About
+        main_about_text = None
+        try:
+            main_about_text = MenuCatalog.objects.get(slug='o-nas', is_hidden=False)
+        except MenuCatalog.DoesNotExist:
+            pass
+
+        index_about_us_text = get_static_text(INDEX_ABOUT_US_TEXT, request)
+
+        
+        # 6. Advantage
+        cache_key = 'homepage_advantages'
+        main_advantages = cache.get(cache_key)
+
+        if main_advantages is None:
+            settings_obj = ProjectSettings.objects.first()
+            if settings_obj:
+                main_advantages = list(settings_obj.advantages.filter(is_hidden=False).order_by('order_number'))
+            else:
+                main_advantages = []
+            
+            cache.set(cache_key, main_advantages, 3600)
+            
+        
+        # 7. META TITLE, DESCRIPTION, KEYWORDS
+        index_title_page = get_static_text(INDEX_TITLE_PAGE, request)
+        index_meta_description = get_static_text(INDEX_META_DESCRIPTION, request)
+        index_meta_keywords = get_static_text(INDEX_META_KEYWORDS, request)
+        
+        # 8. MAIN TEXT COVER
+        cover_text_right = get_static_text(COVER_TEXT_RIGHT, request)
+        cover_text_left = get_static_text(COVER_TEXT_LEFT, request)
+
+        
+
         context = {
             'is_index' : is_index,
             'popular_categories': popular_categories,
-            'current_filial' : request.filial,
+            'current_filial' : current_filial,
             'main_services': main_services,
             'main_articles':main_articles,
             'main_reviews':main_reviews,
+            'main_about_text':main_about_text,
+            'main_advantages':main_advantages,
+            'index_about_us_text':index_about_us_text,
+            'cover_text_right':cover_text_right,
+            'cover_text_left':cover_text_left,
+            'index_title_page':index_title_page,
+            'index_meta_description':index_meta_description,
+            'index_meta_keywords':index_meta_keywords,
         }
 
         return render(request, self.template_name, context)

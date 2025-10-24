@@ -124,17 +124,6 @@ def global_views(request):
     return context
 
 
-# def filial_context(request):
-#     """
-#     Prépare et précharge les données des filiales pour une utilisation
-#     performante dans les templates.
-#     """
-#     all_filials = Filial.objects.filter(is_hidden=False)
-#     return {
-#         'all_filials': all_filials,
-#         'current_filial': request.filial,
-#     }
-
 def filial_context(request):
     """
     Rend la filiale actuelle et la liste de toutes les filiales actives
@@ -164,10 +153,6 @@ def cart_context(request):
     cart_data_from_session = request.session.get(settings.CART_SESSION_ID)
     
     cart_data = cart.get_cart_data()
-    
-    # product_id_strings = cart_data.keys()
-    
-    # cart_product_ids = [int(pid) for pid in product_id_strings]
 
     cart_product_ids = [int(pid) for pid in cart_data.keys()]
     
@@ -177,8 +162,6 @@ def cart_context(request):
     # print(f"Context Processor - Product IDs in Cart: {cart_product_ids}")
     # print(f"Context Processor - Unique Items Count: {cart_items_count}")
     # # ------------------------
-
-    # print(f"[CONTEXT_PROCESSOR] Données du panier trouvées dans la session : {cart_data_from_session}")
 
     return {
         'cart_object': cart,

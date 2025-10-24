@@ -36,7 +36,7 @@ if settings.DEBUG:
 urlpatterns += [
     # --- CUSTOM APP URL ---
     # path("robots.txt", RobotsTxtView.as_view()),
-    # path('search/', include('apps.search.urls', namespace='search')),
+    path('search/', include('apps.search.urls', namespace='search')),
     path('select2/', include('django_select2.urls')),
     # path('import-export/', include('apps.import_export.urls', namespace='import_export')),
     path('checkout/', include('apps.checkout.urls')),

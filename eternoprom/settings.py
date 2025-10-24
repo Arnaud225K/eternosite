@@ -79,8 +79,8 @@ INSTALLED_APPS = [
     'apps.reviews',
     'apps.gallery',
     # 'apps.import_export',
-    # 'apps.search',
-    # 'apps.static_text',
+    'apps.search',
+    'apps.static_text',
     # 'apps.sitemap_gen',
 ]
 
@@ -110,7 +110,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 #Custom CONSTEXT PROCESSORS
-                # 'apps.static_text.views.static_text',
+                'apps.static_text.views.static_text',
                 PROJECT_NAME + ".views.global_views",
                 PROJECT_NAME + ".views.filial_context",
                 PROJECT_NAME + ".views.cart_context",

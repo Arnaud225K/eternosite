@@ -685,4 +685,320 @@
         }
     });
 
+
+    document.addEventListener('DOMContentLoaded', function() {
+    "use strict";
+
+    // Injection des styles pour le surlignage des résultats
+    const highlightStyle = document.createElement('style');
+    highlightStyle.textContent = `
+        .search-results-dropdown mark {
+            background: rgba(255, 215, 0, 0.3); /* Jaune semi-transparent */
+            color: inherit;
+            padding: 0;
+            font-weight: bold;
+        }
+    `;
+    document.head.appendChild(highlightStyle);
+
+        function initializeLiveSearch() {
+            // Cibler les éléments de la barre de recherche dans le header
+            const searchContainer = document.querySelector(".header__search");
+            if (!searchContainer) return;
+
+            const searchForm = searchContainer.querySelector('form');
+            const searchInput = searchContainer.querySelector('input[type="search"]');
+            const resultsDropdown = document.getElementById('live-search-results');
+            
+            if (!searchForm || !searchInput || !resultsDropdown) {
+                // console.warn("Live search elements not found. Search will not be initialized.");
+                return;
+            }
+            
+            // Ouvrir au focus si du texte est déjà présent
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value.trim().length >= 2) {
+                    resultsDropdown.style.display = 'block';
+                }
+            });
+
+            // Fermer si on clique en dehors de la zone de recherche
+            document.addEventListener('click', (e) => {
+                if (!searchContainer.contains(e.target)) {
+                    resultsDropdown.style.display = 'none';
+                }
+            });
+            
+            // Empêcher la fermeture si on clique à l'intérieur des résultats
+            resultsDropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // --- Logique de recherche asynchrone avec debounce ---
+            let searchTimeout;
+            let currentRequestController = null;
+
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.trim();
+                clearTimeout(searchTimeout);
+
+                // Annuler la requête précédente si elle est en cours
+                if (currentRequestController) {
+                    currentRequestController.abort();
+                }
+
+                // Cacher les résultats si la recherche est trop courte
+                if (query.length < 2) {
+                    resultsDropdown.style.display = 'none';
+                    return;
+                }
+
+                // Lancer la recherche après un délai de 300ms
+                searchTimeout = setTimeout(async () => {
+                    const url = `/search/live-search/?q=${encodeURIComponent(query)}`;
+                    
+                    try {
+                        currentRequestController = new AbortController();
+                        
+                        const response = await fetch(url, { 
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                            signal: currentRequestController.signal
+                        });
+                        
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        
+                        const data = await response.json();
+                        renderSearchResults(data.results, query);
+                        
+                    } catch (error) {
+                        // Ignorer les erreurs d'annulation de requête
+                        if (error.name !== 'AbortError') {
+                            console.error("Live search error:", error);
+                            resultsDropdown.innerHTML = '<div class="search-result-item no-results">Ошибка загрузки</div>';
+                            resultsDropdown.style.display = 'block';
+                        }
+                    } finally {
+                        currentRequestController = null;
+                    }
+                }, 300);
+            });
+
+            // Gérer la touche Échap pour fermer les résultats
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    resultsDropdown.style.display = 'none';
+                }
+            });
+
+            /**
+             * Affiche les résultats de la recherche dans le dropdown.
+             */
+            function renderSearchResults(results, query) {
+                if (!query || query.length < 2) {
+                    resultsDropdown.style.display = 'none';
+                    return;
+                }
+
+                let html = '';
+                if (results.length === 0) {
+                    html = '<div class="search-result-item no-results">Ничего не найдено</div>';
+                } else {
+                    // Limiter à 8 résultats pour l'affichage
+                    html = results.slice(0, 8).map(item => `
+                        <a href="${item.url}" class="search-result-item">
+                            <div class="search-result-item__image">
+                                ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" loading="lazy">` : '<div class="placeholder"></div>'}
+                            </div>
+                            <div class="search-result-item__info">
+                                <span class="title">${highlightText(item.title, query)}</span>
+                                <span class="type">${item.type === 'product' ? 'Товар' : 'Категория'}</span>
+                            </div>
+                        </a>
+                    `).join('');
+                }
+                
+                // Lien "Voir tous les résultats"
+                const fullSearchUrl = `${searchForm.getAttribute('action')}?q=${encodeURIComponent(query)}`;
+                html += `<a href="${fullSearchUrl}" class="search-result-all">Показать все результаты (${results.length})</a>`;
+
+                resultsDropdown.innerHTML = html;
+                resultsDropdown.style.display = 'block';
+            }
+
+            /**
+             * Met en évidence le texte correspondant à la recherche dans une chaîne.
+             */
+            function highlightText(text, query) {
+                if (!text) return '';
+                // Utiliser une expression régulière pour un remplacement insensible à la casse
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                return text.replace(regex, '<mark>$1</mark>');
+            }
+        }
+
+        // Lancer l'initialisation après le chargement complet du DOM
+        initializeLiveSearch();
+    });
+
+
 })();
+
+
+
+
+
+// document.addEventListener('DOMContentLoaded', function() {
+//     "use strict";
+
+//     // Injection des styles pour le surlignage des résultats
+//     const highlightStyle = document.createElement('style');
+//     highlightStyle.textContent = `
+//         .search-results-dropdown mark {
+//             background: rgba(255, 215, 0, 0.3); /* Jaune semi-transparent */
+//             color: inherit;
+//             padding: 0;
+//             font-weight: bold;
+//         }
+//     `;
+//     document.head.appendChild(highlightStyle);
+
+//     function initializeLiveSearch() {
+//         // Cibler les éléments de la barre de recherche dans le header
+//         const searchContainer = document.querySelector(".header__search");
+//         if (!searchContainer) return;
+
+//         const searchForm = searchContainer.querySelector('form');
+//         const searchInput = searchContainer.querySelector('input[type="search"]');
+//         const resultsDropdown = document.getElementById('live-search-results');
+        
+//         if (!searchForm || !searchInput || !resultsDropdown) {
+//             console.warn("Live search elements not found. Search will not be initialized.");
+//             return;
+//         }
+
+//         // --- Logique pour ouvrir/fermer le dropdown de résultats ---
+        
+//         // Ouvrir au focus si du texte est déjà présent
+//         searchInput.addEventListener('focus', () => {
+//             if (searchInput.value.trim().length >= 2) {
+//                 resultsDropdown.style.display = 'block';
+//             }
+//         });
+
+//         // Fermer si on clique en dehors de la zone de recherche
+//         document.addEventListener('click', (e) => {
+//             if (!searchContainer.contains(e.target)) {
+//                 resultsDropdown.style.display = 'none';
+//             }
+//         });
+        
+//         // Empêcher la fermeture si on clique à l'intérieur des résultats
+//         resultsDropdown.addEventListener('click', (e) => {
+//             e.stopPropagation();
+//         });
+
+//         // --- Logique de recherche asynchrone avec debounce ---
+//         let searchTimeout;
+//         let currentRequestController = null;
+
+//         searchInput.addEventListener('input', () => {
+//             const query = searchInput.value.trim();
+//             clearTimeout(searchTimeout);
+
+//             // Annuler la requête précédente si elle est en cours
+//             if (currentRequestController) {
+//                 currentRequestController.abort();
+//             }
+
+//             // Cacher les résultats si la recherche est trop courte
+//             if (query.length < 2) {
+//                 resultsDropdown.style.display = 'none';
+//                 return;
+//             }
+
+//             // Lancer la recherche après un délai de 300ms
+//             searchTimeout = setTimeout(async () => {
+//                 const url = `/search/live-search/?q=${encodeURIComponent(query)}`;
+                
+//                 try {
+//                     currentRequestController = new AbortController();
+                    
+//                     const response = await fetch(url, { 
+//                         headers: { 'X-Requested-With': 'XMLHttpRequest' },
+//                         signal: currentRequestController.signal
+//                     });
+                    
+//                     if (!response.ok) throw new Error('Network response was not ok');
+                    
+//                     const data = await response.json();
+//                     renderSearchResults(data.results, query);
+                    
+//                 } catch (error) {
+//                     // Ignorer les erreurs d'annulation de requête
+//                     if (error.name !== 'AbortError') {
+//                         console.error("Live search error:", error);
+//                         resultsDropdown.innerHTML = '<div class="search-result-item no-results">Ошибка загрузки</div>';
+//                         resultsDropdown.style.display = 'block';
+//                     }
+//                 } finally {
+//                     currentRequestController = null;
+//                 }
+//             }, 300);
+//         });
+
+//         // Gérer la touche Échap pour fermer les résultats
+//         searchInput.addEventListener('keydown', (e) => {
+//             if (e.key === 'Escape') {
+//                 resultsDropdown.style.display = 'none';
+//             }
+//         });
+
+//         /**
+//          * Affiche les résultats de la recherche dans le dropdown.
+//          */
+//         function renderSearchResults(results, query) {
+//             if (!query || query.length < 2) {
+//                 resultsDropdown.style.display = 'none';
+//                 return;
+//             }
+
+//             let html = '';
+//             if (results.length === 0) {
+//                 html = '<div class="search-result-item no-results">Ничего не найдено</div>';
+//             } else {
+//                 // Limiter à 8 résultats pour l'affichage
+//                 html = results.slice(0, 8).map(item => `
+//                     <a href="${item.url}" class="search-result-item">
+//                         <div class="search-result-item__image">
+//                             ${item.image_url ? `<img src="${item.image_url}" alt="${item.title}" loading="lazy">` : '<div class="placeholder"></div>'}
+//                         </div>
+//                         <div class="search-result-item__info">
+//                             <span class="title">${highlightText(item.title, query)}</span>
+//                             <span class="type">${item.type === 'product' ? 'Товар' : 'Категория'}</span>
+//                         </div>
+//                     </a>
+//                 `).join('');
+//             }
+            
+//             // Lien "Voir tous les résultats"
+//             const fullSearchUrl = `${searchForm.getAttribute('action')}?q=${encodeURIComponent(query)}`;
+//             html += `<a href="${fullSearchUrl}" class="search-result-all">Показать все результаты (${results.length})</a>`;
+
+//             resultsDropdown.innerHTML = html;
+//             resultsDropdown.style.display = 'block';
+//         }
+
+//         /**
+//          * Met en évidence le texte correspondant à la recherche dans une chaîne.
+//          */
+//         function highlightText(text, query) {
+//             if (!text) return '';
+//             // Utiliser une expression régulière pour un remplacement insensible à la casse
+//             const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+//             return text.replace(regex, '<mark>$1</mark>');
+//         }
+//     }
+
+//     // Lancer l'initialisation après le chargement complet du DOM
+//     initializeLiveSearch();
+// });
